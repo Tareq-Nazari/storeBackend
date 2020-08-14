@@ -16,6 +16,4 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('/admin','AdminController@index');
-Route::get('/test','HiController@test');
-Route::post('/admin/create_post','AdminController@create_post')->name('create_post');
+

@@ -78,16 +78,6 @@ Route::prefix('users')->group(function () {
 
 });
 
-Route::post('/login', 'api\UserController@login');
-Route::get('/products', 'api\ProductController@allProduct');
-Route::post('/register', 'api\UserController@register');
-Route::middleware(['auth:api', 'scope:do_anything'])->group(function () {
-    Route::prefix('admin')->group(function () {
-        Route::post('/test', 'HiController@test');
-        Route::post('/create_post', 'api\AdminController@create_post');
-
-    });
-});
 
 
 
