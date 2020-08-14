@@ -1,0 +1,332 @@
+<?php
+
+namespace App\Http\Controllers\api;
+
+use App\Basket;
+use App\Http\Controllers\Controller;
+use App\Profile;
+use App\User;
+use http\Env\Response;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
+
+
+class UserController extends Controller
+{
+    public function register(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email|unique:App\User|',
+            'password' => 'required',
+            'name' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+            'phone' => 'required|numeric:11',
+            'role' => 'numeric:1'
+
+        ]);
+
+        if ($validator->fails()) {
+            return \response()->json($validator->errors(), 400);
+        }
+        $user = new User();
+        $profile = new Profile();
+        $profile->name = $request->name;
+        $user->name = $request->name;
+        $profile->address = $request->address;
+
+        $profile->phone = $request->phone;
+        $user->email = $request->email;
+        $user->name = $request->name;
+        if ($request->has('role')) {
+            $user->role = $request->role;
+            $profile->role = $request->role;
+        } else {
+            $user->role = 1;
+            $profile->role = 1;
+        }
+
+        $user->password = Hash::make($request->password);
+        if ($user->save()) {
+            $profile->user_id = $user->id;
+
+            if ($profile->save()) {
+                return response()->json([
+                    'message' => 'user created',
+                    'status' => '201'
+                ], 201);
+            } else return response()->json([
+
+                'message' => 'something is wrong '
+
+            ], 400);
+        }
+        return response()->json([
+            'message' => 'something is wrong'
+        ], 400);
+
+    }
+
+    public function login(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required',
+
+        ]);
+
+        if ($validator->fails()) {
+            return \response()->json($validator->errors(), 400);
+        }
+        if (!Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+            return response()->json([
+                'message' => 'unauthrized',
+                'satatus' => '401'
+            ], 401);
+        }
+        $user = $request->user();
+        if ($user->role == 2) {
+            $tokenData = $user->createToken('Personal Access Token', ['do_anything']);
+        } else {
+            $tokenData = $user->createToken('Personal Access Token', ['can_create']);
+        }
+        $token = $tokenData->token;
+        if ($token->save()) {
+            return response()->json([
+                'user' => $user,
+                'access_token' => $tokenData->accessToken,
+                'token_type' => 'Bearar',
+                'scope' => $tokenData->token->scopes
+            ]);
+
+        } else {
+            return \response()->json([
+                'msg' => 'errrrror'
+            ]);
+        }
+    }
+
+    public function logout(Request $request)
+    {
+        $request->user()->token()->revoke();
+        return response()->json([
+            'message' => 'logout',
+            'status' => 200
+        ], 200);
+    }
+
+    public function editProfile(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'string|max:255',
+            'address' => 'string|max:255',
+            'phone' => 'numeric:11',
+        ]);
+
+        if ($validator->fails()) {
+            return \response()->json($validator->errors(), 400);
+        }
+        $user_id = Auth::user()->id;
+        if ($user_id) {
+            DB::table('profiles')->where('user_id', $user_id)->update([
+                'name' => $request->name,
+                'phone' => $request->phone,
+                'address' => $request->address,
+
+            ]);
+            DB::table('users')->where('id', $user_id)->update([
+                'name' => $request->name,
+                'email' => $request->email,
+            ]);
+            return \response()->json([
+                "message" => "edit store success"
+            ], 200);
+
+        } else return \response()->json([
+            "message" => "something wrong"
+        ], 400);
+
+    }
+
+    public function test()
+    {
+        $p = Auth::user()->name;
+        return response()->json([
+            'message' => 'fucking right ',
+            'code' => '244',
+            'p' => $p
+        ]);
+    }
+
+//for basket
+    public function addToBasket($product_id)
+    {
+        $product = DB::table('products')->find($product_id);
+        $prof = DB::table('profiles')->where('user_id', Auth::user()->id)->first();
+        if ($product && $prof) {
+            $basket = new Basket();
+            $basket->profile_id = $prof->id;
+            $basket->product_id = $product_id;
+            $basket->store_id = $product->store_id;
+            $basket->name = $prof->name;
+            $basket->product_name = $product->name;
+            $basket->price = $product->price;
+            $basket->created_at = time();
+
+            if ($basket->save()) {
+                return \response()->json([
+                    "message" => "product added to the basket"
+                ], 200);
+            } else return \response()->json([
+                "message" => "something wrong"
+            ], 400);
+
+        } else return \response()->json([
+            "message" => "something wrong"
+        ], 400);
+
+    }
+
+    public function deleteFromBasket($basket_id)
+    {
+        if (DB::table('basket')->find($basket_id)->delete()) {
+            return \response()->json([
+                "message" => "product deleted from your basket"
+            ], 200);
+        } else return \response()->json([
+            "message" => "something wrong"
+        ], 400);
+    }
+
+    public function basket()
+    {
+        $profile_id = DB::table('profiles')->where('user_id', Auth::user()->id);
+        if ($basket = DB::table('basket')->where('profile_id', $profile_id)->get()) {
+
+            return \response()->json([
+                "message" => "your basket ",
+                $basket
+            ], 200);
+        } else return \response()->json([
+            "message" => "something wrong"
+        ], 400);
+
+    }
+
+    // for stores
+    public function searchStore(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'string|max:255',
+            'cat_id' => 'integer',
+        ]);
+
+        if ($validator->fails()) {
+            return \response()->json($validator->errors(), 400);
+        }
+        $name = $request->name;
+        $category = $request->cat_id;
+        $stores = DB::table('stores')
+            ->when($name, function ($query, $name) {
+                return $query->where('name', 'like', '%' . $name . '%');
+            })->when($category, function ($query, $category) {
+                return $query->where('cat_id', 'like', '%' . $category . '%');
+            });
+    }
+
+    //for Factor
+    public function searchFactor(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'string|max:255',
+            'store_name' => 'string|max:255',
+            'product_name' => 'string|max:255',
+            'payment_receipt' => 'integer',
+            'store_id' => 'integer',
+            'product_id' => 'integer',
+            'profile_id' => 'integer',
+            'price' => 'integer',
+            'created_at' => 'date'
+
+        ]);
+
+        if ($validator->fails()) {
+            return \response()->json($validator->errors(), 400);
+        }
+        $store_name = $request->store_name;
+        $price = $request->price;
+        $name = $request->name;
+        $product_name = $request->product_name;
+        $profile_id = DB::table('profiles')->where('user_id', Auth::user()->id);
+        $payment_receipt = $request->payment_receipt;
+        $store_id = $request->store_id;
+        $created_at = $request->created_at;
+        $product_id = $request->product_id;
+        $factors = DB::table('factor')->where('profile_id', $profile_id)
+            ->when($name, function ($query, $name) {
+                return $query->where('name', 'like', '%' . $name . '%');
+            })->when($store_name, function ($query, $store_name) {
+                return $query->where('store_name', 'like', '%' . $store_name . '%');
+            })->when($product_name, function ($query, $product_name) {
+                return $query->where('product_name', 'like', '%' . $product_name . '%');
+            })->when($price, function ($query, $price) {
+                return $query->where('price', $price);
+            })->when($payment_receipt, function ($query, $payment_receipt) {
+                return $query->where('payment_receipt', $payment_receipt);
+            })->when($store_id, function ($query, $store_id) {
+                return $query->where('store_id', $store_id);
+            })->when($created_at, function ($query, $created_at) {
+                return $query->where('created_at', $created_at);
+            })->when($product_id, function ($query, $product_id) {
+                return $query->where('product_id', $product_id);
+            })->get();
+        return \response()->json($factors, 200);
+
+    }//for product
+
+
+    public function searchProduct(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'string|max:255',
+            'store_id' => 'integer',
+            'cat_id' => 'integer',
+            'product_id' => 'integer',
+            'price' => 'integer',
+            'max' => 'integer',
+            'min' => 'integer',
+        ]);
+
+        if ($validator->fails()) {
+            return \response()->json($validator->errors(), 400);
+        }
+
+        $price = $request->price;
+        $name = $request->name;
+        $store_id = $request->store_id;
+        $cat_id = $request->cat_id;
+        $product_id = $request->product_id;
+        $max = $request->max;
+        $min = $request->min;
+        $products = DB::table('products')
+            ->when($store_id, function ($query, $store_id) {
+                return $query->where('store_id', $store_id);
+            })
+            ->when($name, function ($query, $name) {
+                return $query->where('name', 'like', '%' . $name . '%')
+                    ->orWhere('caption', 'like', '%' . $name . '%');
+            })->when($price, function ($query, $price) {
+                return $query->where('price', $price);
+            })->when($product_id, function ($query, $product_id) {
+                return $query->where('id', $product_id);
+            })->when($max, $min, function ($query, $min, $max) {
+                return $query->whereBetween('price', [$min, $max]);
+            })->when($cat_id, function ($query, $cat_id) {
+                return $query->where('cat_id', $cat_id);
+            })->get();
+        return \response()->json($products, 200);
+    }
+}
