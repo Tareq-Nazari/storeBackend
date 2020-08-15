@@ -89,9 +89,11 @@ class UserController extends Controller
         }
         $user = $request->user();
         if ($user->role == 2) {
-            $tokenData = $user->createToken('Personal Access Token', ['do_anything']);
+            $tokenData = $user->createToken('Personal Access Token', ['shopOwner']);
+        } else if ($user->role == 3) {
+            $tokenData = $user->createToken('Personal Access Token', ['admin']);
         } else {
-            $tokenData = $user->createToken('Personal Access Token', ['can_create']);
+            $tokenData = $user->createToken('Personal Access Token', ['user']);
         }
         $token = $tokenData->token;
         if ($token->save()) {

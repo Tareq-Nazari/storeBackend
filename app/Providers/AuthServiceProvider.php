@@ -27,8 +27,9 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
         Passport::routes();
         passport::tokensCan([
-            'do_anything' => 'admin',
-            'can_create' => 'client'
+            'admin' => 'admin',
+            'shopOwner' => 'shopOwner',
+            'user' => 'user'
         ]);
 
         //
