@@ -16,11 +16,30 @@ class ProductController extends Controller
 {
     public function allProduct()
     {
+        $products=DB::table('products')->get();
+        if($products){
+            return response()->json([
+                $products
+            ],200);
+        }
+        else return response()->json([
+            "message"=>"something is wrong"
+        ],400);
+
+    }
+    public function allProductOfStore() //تمام محصولات یک مغازه بخصوص
+    {
         $store_id = findStoreId();
         $all_product = DB::table('products')->where('store_id', $store_id)->get();
-        return response()->json([
-            $all_product
-        ], 200);
+        if($all_product){
+            return response()->json([
+                $all_product
+            ],200);
+        }
+        else return response()->json([
+            "message"=>"something is wrong"
+        ],400);
+
     }
 
     public function create(Request $request)

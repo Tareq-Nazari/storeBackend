@@ -50,56 +50,6 @@ class ShopOwnerController extends Controller
         return \response()->json($products, 200);
     }
 
-    public function categoriesProductOfStore() // دسته بندی محصولات یک مغازه خاص را برمی گرداند
-    {
-        $store_id = findStoreId();
-        $categories = DB::table('categories')->where('store_id', $store_id)->get();
-        return \response()->json([
-            $categories
-        ], 200);
-
-    }
-
-    public function addCategory(Request $request)
-    { $validator = Validator::make($request->all(), [
-        'name' => 'string|max:255',
-    ]);
-
-        if ($validator->fails()) {
-            return \response()->json($validator->errors(), 400);
-        }
-
-
-        $category = new Category();
-        $store_id = findStoreId();
-        if (!DB::table('categories')->where('store_id', $store_id)->where('name', $request->name)) {
-            $category->name = $request->name;
-            $category->store_id = $store_id;
-            if ($category->save()) {
-                return response()->json([
-                    'message' => 'category added'
-                ], 200);
-            } else return response()->json([
-                "meesage" => 'someting is wrong'
-            ], 400);
-        } else return response()->json([
-            "meesage" => 'there is a category with this nam, please change the name '
-        ], 400);
-
-    }
-
-    public function deleteCategory($cat_id)
-    {
-        $store_id = findStoreId();
-        if (DB::table('categories')->where('store_id', $store_id)->where('id', $cat_id)->delete()) {
-            return response()->json([
-                "message" => "category deleted"
-            ], 200);
-        } else return response()->json([
-            "meesage" => 'someting is wrong'
-        ], 400);
-    }
-
 //for Factor
     public function searchFactor(Request $request)
     {

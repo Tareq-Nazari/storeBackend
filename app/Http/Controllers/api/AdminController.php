@@ -12,8 +12,17 @@ use Illuminate\Support\Facades\Validator;
 
 class AdminController extends Controller
 {
-    public function index()
+    public function allStore()
     {
+        $stores=DB::table('stores')->get();
+        if($stores){
+            return response()->json([
+                $stores
+            ],200);
+        }
+        else return response()->json([
+            "message"=>"something is wrong"
+        ],400);
 
     }
 
@@ -92,7 +101,8 @@ class AdminController extends Controller
     {
         if ($store = DB::table('stores')->where('id', $store_id)->delete()) {
             return \response()->json([
-                "message" => "product deleted"
+                "message" => "product deleted",
+                $store
             ], 200);
         } else return \response()->json([
             "message" => "something wrong"
