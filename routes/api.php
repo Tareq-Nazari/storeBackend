@@ -36,7 +36,7 @@ Route::prefix('category')->group(function () {
     Route::post('/searchProduct', 'api\CategoryController@searchProductStore');//سرچ دسته بندی محصولات
 });
 
-Route::middleware(['auth:api','scope:admin'])->group(function () {
+Route::middleware([])->group(function () {
     Route::prefix('admin')->group(function () {
         Route::prefix('store')->group(function () {
             Route::post('/create', 'api\AdminController@createStore');
@@ -44,19 +44,20 @@ Route::middleware(['auth:api','scope:admin'])->group(function () {
             Route::post('/delete{store_id}', 'api\AdminController@deleteStore');
             Route::post('/edit', 'api\AdminController@editStore');
             Route::post('/search', 'api\AdminController@searchStore');
-            Route::prefix('category')->group(function () {
-                Route::prefix('store')->group(function () {
-                    Route::post('/all', 'api\CategoryController@allStore');// دسته بندی محصولات یک مغازه را برمی گرداند
-                    Route::post('/add', 'api\CategoryController@addStoreCategory');
-                    Route::post('/delete{cat_id}', 'api\CategoryController@deleteStoreCategory');
-                    Route::post('/search', 'api\CategoryController@searchCategoryStore');
-                });
-                Route::prefix('product')->group(function () {
-                    Route::post('/all', 'api\CategoryController@allProduct');// دسته بندی محصولات یک مغازه را برمی گرداند
-                    Route::post('/add', 'api\CategoryController@addProductCategory');
-                    Route::post('/delete{cat_id}', 'api\CategoryController@deleteProductCategory');
-                    Route::post('/search', 'api\CategoryController@searchProductStore');
-                });
+
+        });
+        Route::prefix('category')->group(function () {
+            Route::prefix('store')->group(function () {
+                Route::post('/all', 'api\CategoryController@allStore');// دسته بندی محصولات یک مغازه را برمی گرداند
+                Route::post('/add', 'api\CategoryController@addStoreCategory');
+                Route::post('/delete{cat_id}', 'api\CategoryController@deleteStoreCategory');
+                Route::post('/search', 'api\CategoryController@searchCategoryStore');
+            });
+            Route::prefix('product')->group(function () {
+                Route::post('/all', 'api\CategoryController@allProduct');// دسته بندی محصولات یک مغازه را برمی گرداند
+                Route::post('/add', 'api\CategoryController@addProductCategory');
+                Route::post('/delete{cat_id}', 'api\CategoryController@deleteProductCategory');
+                Route::post('/search', 'api\CategoryController@searchProductStore');
             });
         });
         Route::prefix('product')->group(function () {
