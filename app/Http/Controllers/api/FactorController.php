@@ -54,5 +54,19 @@ class FactorController extends Controller
 
     }
 
+    public function all()
+    {
+       $factors=DB::table('factor')->get();
+       if($factors){
+           return response()->json(
+               $factors
+           , 200);
+       } else return \response()->json([
+           "message" => "there is no factor"
+       ], 400);
+
+
+    }
+
 
 }

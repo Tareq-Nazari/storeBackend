@@ -153,15 +153,6 @@ class UserController extends Controller
 
     }
 
-    public function test()
-    {
-        $p = Auth::user()->name;
-        return response()->json([
-            'message' => 'fucking right ',
-            'code' => '244',
-            'p' => $p
-        ]);
-    }
 
 //for basket
     public function addToBasket($product_id)
@@ -208,10 +199,10 @@ class UserController extends Controller
         $profile_id = DB::table('profiles')->where('user_id', Auth::user()->id);
         if ($basket = DB::table('basket')->where('profile_id', $profile_id)->get()) {
 
-            return \response()->json([
-                "message" => "your basket ",
+            return \response()->json(
+
                 $basket
-            ], 200);
+            , 200);
         } else return \response()->json([
             "message" => "something wrong"
         ], 400);
@@ -227,7 +218,7 @@ class UserController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return \response()->json($validator->errors(), 400);
+            return \response()->json([$validator->errors()], 400);
         }
         $name = $request->name;
         $category = $request->cat_id;
@@ -237,6 +228,7 @@ class UserController extends Controller
             })->when($category, function ($query, $category) {
                 return $query->where('cat_id', 'like', '%' . $category . '%');
             });
+        return \response()->json($stores,200);
     }
 
     //for Factor
@@ -292,30 +284,20 @@ class UserController extends Controller
 
     public function searchProduct(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'string|max:255',
-            'store_id' => 'integer',
-            'cat_id' => 'integer',
-            'product_id' => 'integer',
-            'price' => 'integer',
-            'max' => 'integer',
-            'min' => 'integer',
-        ]);
 
-        if ($validator->fails()) {
-            return \response()->json($validator->errors(), 400);
-        }
 
         $price = $request->price;
         $name = $request->name;
         $store_id = $request->store_id;
         $cat_id = $request->cat_id;
-        $product_id = $request->product_id;
+        $product_id = $request->id;
         $max = $request->max;
         $min = $request->min;
         $products = DB::table('products')
             ->when($store_id, function ($query, $store_id) {
                 return $query->where('store_id', $store_id);
+            })->when($product_id, function ($query, $product_id) {
+                return $query->where('id', $product_id);
             })
             ->when($name, function ($query, $name) {
                 return $query->where('name', 'like', '%' . $name . '%')
@@ -324,11 +306,99 @@ class UserController extends Controller
                 return $query->where('price', $price);
             })->when($product_id, function ($query, $product_id) {
                 return $query->where('id', $product_id);
-            })->when($max, $min, function ($query, $min, $max) {
-                return $query->whereBetween('price', [$min, $max]);
+            })->when($min, function ($query, $min) {
+                return $query->where('price', '>', $min);
+            })->when($max, function ($query, $max) {
+                return $query->where('price', '<', $max);
             })->when($cat_id, function ($query, $cat_id) {
                 return $query->where('cat_id', $cat_id);
             })->get();
         return \response()->json($products, 200);
+    }
+
+    //for users
+    public function allUsers()
+    {
+
+        $user = DB::table('users')
+            ->join('profiles', 'users.id', '=', 'profiles.user_id')
+            ->select('profiles.*', 'users.email')
+            ->get();
+        if ($user) {
+            return \response()->json($user, 200);
+        } else return \response()->json([
+            "message" => "there is no user"
+        ], 400);
+    }
+
+    public function deleteUser($id)
+    {
+        if (DB::table('users')->where('id', $id)->delete() && DB::table('profiles')->where('user_id', $id)->delete()) {
+            return \response()->json([
+                "message" => "user deleted"
+            ], 200);
+        } else return \response()->json([
+            "message" => "something is wrong"
+        ], 400);
+    }
+
+    public function editUser(Request $request)
+    {
+
+
+        if (DB::table('profiles')->where('user_id', $request->id)
+                ->update([
+                    'name' => $request->name,
+                    'role' => $request->role,
+                    'address' => $request->address,
+                    'phone' => $request->phone,
+                    'pic' => $request->pic,
+
+                ]) && DB::table('users')->where('id', $request->id)->update([
+                'email' => $request->email,
+                'name' => $request->name
+            ])) {
+            return \response()->json([
+                "message" => "edit product success"
+            ], 200);
+
+        } else return \response()->json([
+            "message" => "something wrong"
+        ], 400);
+    }
+
+    public function searchUser(Request $request)
+    {
+
+        $role = $request->role;
+        $email = $request->email;
+        $name = $request->name;
+        $id = $request->id;
+        $profile_id = $request->profile_id;
+        $address = $request->address;
+        $phone = $request->phone;
+        $users = DB::table('users')->join('profiles', 'users.id', '=', 'profiles.user_id')
+            ->select('users.email', 'profiles.*')
+            ->when($email, function ($query, $email) {
+                return $query->where('email', $email);
+            })
+            ->when($name, function ($query, $name) {
+                return $query->where('profiles.name', 'like', '%' . $name . '%');
+            })->when($id, function ($query, $id) {
+                return $query->where('user_id', $id);
+            })->when($profile_id, function ($query, $profile_id) {
+                return $query->where('profiles.id', $profile_id);
+            })->when($address, function ($query, $address) {
+                return $query->where('address', $address);
+            })->when($phone, function ($query, $phone) {
+                return $query->where('phone', $phone);
+            })
+            ->when($role, function ($query, $role) {
+                return $query->where('profiles.role', $role);
+            })
+            ->get();
+        return \response()->json($users, 200);
+
+
     }
 }

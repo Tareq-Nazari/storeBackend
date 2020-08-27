@@ -56,19 +56,30 @@ Route::middleware([])->group(function () {
             Route::prefix('product')->group(function () {
                 Route::post('/all', 'api\CategoryController@allProduct');// دسته بندی محصولات یک مغازه را برمی گرداند
                 Route::post('/add', 'api\CategoryController@addProductCategory');
-                Route::post('/delete{cat_id}', 'api\CategoryController@deleteProductCategory');
+                Route::post('/delete{id}', 'api\CategoryController@deleteProductCategory');
                 Route::post('/search', 'api\CategoryController@searchProductStore');
             });
         });
         Route::prefix('product')->group(function () {
             Route::post('/create', 'api\AdminController@createProduct');
+            Route::post('/all', 'api\AdminController@allProduct');
             Route::post('/delete{id}', 'api\AdminController@deleteProduct');
             Route::post('/edit', 'api\AdminController@editProduct');
             Route::post('/search', 'api\AdminController@searchProduct');
         });
-        Route::post('/factor', 'api\AdminController@searchFactor');
+        Route::prefix('users')->group(function () {
+            Route::post('/all', 'api\UserController@allUsers');
+            Route::post('/edit', 'api\UserController@editUser');
+            Route::post('/delete{id}', 'api\UserController@deleteUser');
+            Route::post('/search', 'api\UserController@searchUser');
+            Route::post('/add', 'api\UserController@register');
 
-
+        });
+        Route::prefix('factors')->group(function () {
+            Route::post('/all', 'api\FactorController@all');
+            Route::post('/search', 'api\AdminController@searchFactor');
+        });
+        Route::post('/roles', 'api\AdminController@roles');
     });
 });
 Route::middleware(['auth:api', 'scope:shopOwner'])->group(function () {

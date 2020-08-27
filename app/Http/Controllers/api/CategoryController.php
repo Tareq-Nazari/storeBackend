@@ -18,9 +18,9 @@ class CategoryController extends Controller
     {
         $categories = DB::table('store_categories')->get();
         if ($categories) {
-            return response()->json([
-                $categories,
-            ], 200);
+            return response()->json(
+                $categories
+                , 200);
         } else return response()->json([
             'message' => 'there is no category'
         ], 400);
@@ -31,9 +31,9 @@ class CategoryController extends Controller
     {
         $categories = DB::table('categories')->get();
         if ($categories) {
-            return response()->json([
-                $categories,
-            ], 200);
+            return response()->json(
+                $categories
+                , 200);
         } else return response()->json([
             'message' => 'there is no category'
         ], 400);
@@ -44,9 +44,9 @@ class CategoryController extends Controller
     {
         $categories = DB::table('categories')->where('store_id', findStoreId())->get();
         if ($categories) {
-            return response()->json([
-                $categories,
-            ], 200);
+            return response()->json(
+                $categories
+            , 200);
         } else return response()->json([
             'message' => 'there is no category'
         ], 400);
@@ -65,18 +65,17 @@ class CategoryController extends Controller
         }
         $category = new store_categories();
         $category->name = $request->name;
-        if ($category->save) {
-            return response()->json([
+        if ($category->save()) {
+            return response()->json(
                 $category,
-                "message" => "successful"
-            ], 200);
+             200);
         } else return response()->json(['message' => 'something wrong'], 400);
     }
 
     public function deleteStoreCategory($cat_id)
     {
         if ($cat_id) {
-            if (DB::table('store_categories')->find($cat_id)->delete()) {
+            if (DB::table('store_categories')->where('id', $cat_id)->delete()) {
                 return response()->json([
                     "message" => "delete successful"
                 ], 200);
@@ -100,19 +99,18 @@ class CategoryController extends Controller
         $category = new Product_categories();
         $category->name = $request->name;
         $category->store_id = $request->store_id;
-        if ($category->save) {
-            return response()->json([
-                $category,
-                "message" => "successful"
-            ], 200);
+        if ($category->save()) {
+            return response()->json(
+                $category
+                , 200);
         } else return response()->json(['message' => 'something wrong'], 400);
 
     }
 
-    public function deleteProductCategory($cat_id)
+    public function deleteProductCategory($id)
     {
-        if ($cat_id) {
-            if (DB::table('categories')->find($cat_id)->delete()) {
+        if ($id) {
+            if (DB::table('categories')->where('id', $id)->delete()) {
                 return response()->json([
                     "message" => "delete successful"
                 ], 200);
@@ -135,11 +133,11 @@ class CategoryController extends Controller
         $category = new Product_categories();
         $category->name = $request->name;
         $category->store_id = findStoreId();
-        if ($category->save) {
-            return response()->json([
+        if ($category->save()) {
+            return response()->json(
                 $category,
-                "message" => "successful"
-            ], 200);
+
+            200);
         } else return response()->json(['message' => 'something wrong'], 400);
 
 
@@ -159,14 +157,7 @@ class CategoryController extends Controller
     //for admin
     public function searchCategoryStore(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'string|max:255',
-            'id' => 'integer',
 
-        ]);
-        if ($validator->fails()) {
-            return \response()->json($validator->errors(), 400);
-        }
         $id = $request->id;
         $name = $request->name;
 
@@ -186,26 +177,16 @@ class CategoryController extends Controller
 
     public function searchProductStore(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'string|max:255',
-            'id' => 'integer',
-            'store_id' => 'integer'
-
-        ]);
-        if ($validator->fails()) {
-            return \response()->json($validator->errors(), 400);
-        }
         $id = $request->id;
         $name = $request->name;
         $store_id = $request->store_id;
-
-        $categories = DB::table('store_categories')
+        $categories = DB::table('categories')
             ->when($name, function ($query, $name) {
                 return $query->where('name', 'like', '%' . $name . '%');
             })->when($id, function ($query, $id) {
                 return $query->where('id', $id);
             })->when($store_id, function ($query, $store_id) {
-                return $query->where('id', $store_id);
+                return $query->where('store_id', $store_id);
             })->get();
         if ($categories) {
             return \response()->json($categories, 200);
@@ -233,7 +214,7 @@ class CategoryController extends Controller
         $store_id = findStoreId();
 
         $categories = DB::table('store_categories')->where($store_id, function ($query, $store_id) {
-            return $query->where('id', $store_id);
+            return $query->where('store_id', $store_id);
         })->when($name, function ($query, $name) {
             return $query->where('name', 'like', '%' . $name . '%');
         })->when($id, function ($query, $id) {
@@ -261,11 +242,10 @@ class CategoryController extends Controller
         $cat = new Product_categories();
         $cat->name = $request->name;
         $cat->store_id = findStoreId();
-        if ($cat->save) {
-            return response()->json([
+        if ($cat->save()) {
+            return response()->json(
                 $cat,
-                "message" => "successful"
-            ], 200);
+         200);
         } else return response()->json(['message' => 'something wrong'], 400);
 
     }

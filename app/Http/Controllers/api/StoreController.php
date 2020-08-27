@@ -18,9 +18,9 @@ class StoreController extends Controller
     {
         $stores=DB::table('stores')->get();
         if($stores){
-            return response()->json([
+            return response()->json(
                 $stores
-            ],200);
+            ,200);
         }
         else return response()->json([
             "message"=>"something is wrong"

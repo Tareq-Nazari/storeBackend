@@ -16,29 +16,28 @@ class ProductController extends Controller
 {
     public function allProduct()
     {
-        $products=DB::table('products')->get();
-        if($products){
-            return response()->json([
+        $products = DB::table('products')->get();
+        if ($products) {
+            return response()->json(
                 $products
-            ],200);
-        }
-        else return response()->json([
-            "message"=>"something is wrong"
-        ],400);
+                , 200);
+        } else return response()->json([
+            "message" => "something is wrong"
+        ], 400);
 
     }
+
     public function allProductOfStore() //تمام محصولات یک مغازه بخصوص
     {
         $store_id = findStoreId();
         $all_product = DB::table('products')->where('store_id', $store_id)->get();
-        if($all_product){
-            return response()->json([
+        if ($all_product) {
+            return response()->json(
                 $all_product
-            ],200);
-        }
-        else return response()->json([
-            "message"=>"something is wrong"
-        ],400);
+                , 200);
+        } else return response()->json([
+            "message" => "something is wrong"
+        ], 400);
 
     }
 
@@ -81,26 +80,24 @@ class ProductController extends Controller
     public function Detail($product_id)
     {
         if ($product = DB::table('products')->find($product_id)) {
-            return response()->json([
-                "product" => $product,
-                "message" => "product detail"
-
-            ], 200);
+            return response()->json(
+                $product , 200);
         } else return response()->json([
             "message" => "the product not find"
         ], 400);
     }
 
     public function edit(Request $request)
-    {  $validator = Validator::make($request->all(), [
-        'name' => 'required|string|max:255',
-        'caption' => 'required|string|max:255',
-        'cat_id' => 'required|integer',
-        'product_id' => 'required|integer',
-        'price' => 'required|integer',
-        'pic' => 'required|image',
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'caption' => 'required|string|max:255',
+            'cat_id' => 'required|integer',
+            'product_id' => 'required|integer',
+            'price' => 'required|integer',
+            'pic' => 'required|image',
 
-    ]);
+        ]);
 
         if ($validator->fails()) {
             return \response()->json($validator->errors(), 400);
