@@ -4,7 +4,9 @@ namespace App\Http\Controllers\api;
 
 use App\Basket;
 use App\Http\Controllers\Controller;
+use App\ProductComment;
 use App\Profile;
+use App\StoreComment;
 use App\User;
 use http\Env\Response;
 use Illuminate\Http\Request;
@@ -202,7 +204,7 @@ class UserController extends Controller
             return \response()->json(
 
                 $basket
-            , 200);
+                , 200);
         } else return \response()->json([
             "message" => "something wrong"
         ], 400);
@@ -228,7 +230,7 @@ class UserController extends Controller
             })->when($category, function ($query, $category) {
                 return $query->where('cat_id', 'like', '%' . $category . '%');
             });
-        return \response()->json($stores,200);
+        return \response()->json($stores, 200);
     }
 
     //for Factor
@@ -400,5 +402,54 @@ class UserController extends Controller
         return \response()->json($users, 200);
 
 
+    }
+
+    //for comment
+    public function addProductComment(Request $request)
+    {
+        $text = $request->text;
+        $profile_id = DB::table('profile')->where('user_id', Auth::user()->id);
+        $product_id = $request->product_id;
+        $comment = new ProductComment();
+        $comment->comment = $text;
+        $comment->product_id = $product_id;
+        $comment->profile_id = $profile_id;
+        $comment->created_at = time();
+        if ($comment->save()) {
+            return \response()->json('successful', 200);
+        } else return \response()->json('something is wrong', 400);
+    }
+
+    public function addStoreComment(Request $request)
+    {
+        $text = $request->text;
+        $profile_id = DB::table('profile')->where('user_id', Auth::user()->id);
+        $store_id = $request->store_id;
+        $comment = new StoreComment();
+        $comment->comment = $text;
+        $comment->store_id = $store_id;
+        $comment->profile_id = $profile_id;
+        $comment->created_at = time();
+        if ($comment->save()) {
+            return \response()->json('successful', 200);
+        } else return \response()->json('something is wrong', 400);
+    }
+
+    public function productComments($id)
+    {
+        $comments = DB::table('product_comment')->where('product_id', $id)->value('comment')->get();
+        if ($comments) {
+            return \response()->json($comments, 200);
+
+        } else  return \response()->json('there is no comment', 400);
+    }
+
+    public function StoreComments($id)
+    {
+        $comments = DB::table('store_comment')->where('store_id', $id)->value('comment')->get();
+        if ($comments) {
+            return \response()->json($comments, 200);
+
+        } else  return \response()->json('there is no comment', 400);
     }
 }

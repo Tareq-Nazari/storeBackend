@@ -16,15 +16,14 @@ class StoreController extends Controller
 {
     public function allStore()
     {
-        $stores=DB::table('stores')->get();
-        if($stores){
+        $stores = DB::table('stores')->get();
+        if ($stores) {
             return response()->json(
                 $stores
-            ,200);
-        }
-        else return response()->json([
-            "message"=>"something is wrong"
-        ],400);
+                , 200);
+        } else return response()->json([
+            "message" => "something is wrong"
+        ], 400);
 
     }
 
@@ -70,6 +69,34 @@ class StoreController extends Controller
             'message' => 'store not exist'
         ], 400);
     }
+
+    public function store_detail($id)
+    {
+        if ($store = DB::table('stores')
+            ->join('store_categories', 'cat_id', '=', 'store_categories.id')
+            ->select('stores.id', 'stores.name', 'stores.address', 'stores.phone', 'stores.header_pic', 'stores.profile_pic', 'stores.caption', 'store_categories.name as cat_name')
+            ->where('stores.id', $id)->get()) {
+            return response()->json([
+                $store,
+            ], 200);
+        } else return response()->json([
+            'message' => 'store not exist'
+        ], 400);
+    }
+
+    public function productOfStore($id)
+    {
+        if($products=DB::table('products') ->join('categories', 'cat_id', '=', 'categories.id')
+            ->select('products.id', 'products.name', 'price', 'pic',  'caption', 'categories.name as cat_name')
+            ->where('products.store_id', $id)->get()) {
+            return response()->json([
+                $products,
+            ], 200);
+        } else return response()->json([
+            'message' => 'store not exist'
+        ], 400);
+
+        }
 
 
     public function edit(Request $request)

@@ -20,11 +20,19 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('product')->group(function () {
     Route::post('/search', 'api\UserController@searchProduct');
     Route::post('/all', 'api\ProductController@allProduct');
+    Route::post('/comments', 'api\UserController@ProductComments');
+
+
 });
 Route::prefix('store')->group(function () {
     Route::post('/search', 'api\UserController@searchStore');
     Route::post('/all', 'api\StoreController@allStore');
+    Route::post('/comments', 'api\UserController@StoreComments');
+
+
 });
+Route::post('/store{id}', 'api\StoreController@store_detail');//اطلاعات یک مغازه را برمی گرداند (id مغازه باید فرستاده شود)
+Route::post('/product_store{id}', 'api\StoreController@productOfStore');//محصولات یک مغازه را بر می گرداند
 Route::post('/edit_profile', 'api\UserController@editProfile')->middleware('auth:api');
 Route::post('/logout', 'api\UserController@logout')->middleware('auth:api');
 Route::post('/login', 'api\UserController@login');
@@ -89,6 +97,8 @@ Route::middleware(['auth:api', 'scope:shopOwner'])->group(function () {
             Route::post('/create', 'api\StoreController@create');
             Route::post('/edit', 'api\StoreController@edit');
             Route::post('/detail', 'api\StoreController@Detail');
+            Route::post('/comments', 'api\ShopOwnerController@storeComments');
+            Route::post('/delete_Comment{comment_id}', 'api\ShopOwnerController@deleteStoreComment');
 
         });
         Route::prefix('product')->group(function () {
@@ -98,6 +108,8 @@ Route::middleware(['auth:api', 'scope:shopOwner'])->group(function () {
             Route::post('/edit', 'api\ProductController@edit');
             Route::post('/delete{id}', 'api\ProductController@delete');
             Route::post('/detail{id}', 'api\ProductController@Detail');
+            Route::post('/comments', 'api\ShopOwnerController@productComments');
+            Route::post('/delete_Comment{comment_id}', 'api\ShopOwnerController@deleteProductComment');
         });
         Route::prefix('category')->group(function () {
             Route::post('/all', 'api\CategoryController@productOfStore');// دسته بندی محصولات یک مغازه را برمی گرداند
@@ -116,6 +128,14 @@ Route::prefix('users')->group(function () {
             Route::post('/add{id}', 'api\UserController@addToBasket');
             Route::post('/delete{id}', 'api\UserController@deleteFromBasket');
             Route::post('/payment', 'api\FactorController@PurchaseInvoice');//نهایی کردن خرید های سبد
+
+        });
+        Route::prefix('product')->group(function () {
+            Route::post('/add_comment', 'api\UserController@addProductComment');
+
+        });
+        Route::prefix('store')->group(function () {
+            Route::post('/add_comment', 'api\UserController@addStoreComment');
 
         });
         Route::post('/factor', 'api\UserController@searchFactor');
