@@ -47,7 +47,6 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'caption' => 'required|string|max:255',
             'cat_id' => 'required|integer',
-            'product_id' => 'required|integer',
             'price' => 'required|integer',
             'pic' => 'required|image',
 
@@ -57,23 +56,26 @@ class ProductController extends Controller
             return \response()->json($validator->errors(), 400);
         }
         $store_id = findStoreId();
-        $product = new Product();
-        $product->name = $request->name;
-        $product->caption = $request->caption;
-        $product->price = $request->price;
-        $product->pic = $request->pic;
-        image_store($request->pic);
-        $product->cat_id = $request->cat_id;
-        $product->store_id = $store_id;
-        if ($product->save()) {
+        $cat_id=DB::table('categories')->where('id',$request->cat_id)
+            ->where('store_id',$store_id)->value('id');
+        if ($cat_id) {
+            $product = new Product();
+            $product->name = $request->name;
+            $product->caption = $request->caption;
+            $product->price = $request->price;
+            $product->pic = $request->pic;
+            image_store($request->pic);
+            $product->cat_id = $cat_id;
+            $product->store_id = $store_id;
+            if ($product->save()) {
 
-            return \response()->json([
-                "message" => "product created"
-            ], 200);
-        } else return response()->json([
-            "message" => "something is wrong"
-        ], 400);
-
+                return \response()->json([
+                    "message" => "product created"
+                ], 200);
+            } else return response()->json([
+                "message" => "something is wrong"
+            ], 400);
+        }else return \response()->json(' cant find category with this cat_id ',400);
 
     }
 

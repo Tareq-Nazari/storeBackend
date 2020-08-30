@@ -90,7 +90,7 @@ Route::middleware([])->group(function () {
         Route::post('/roles', 'api\AdminController@roles');
     });
 });
-Route::middleware(['auth:api', 'scope:shopOwner'])->group(function () {
+Route::middleware(['auth:api', 'scopes:shopOwner'])->group(function () {
     Route::prefix('shopOwner')->group(function () {
         Route::post('/searchFactor', 'api\ShopOwnerController@searchFactor');
         Route::prefix('store')->group(function () {
