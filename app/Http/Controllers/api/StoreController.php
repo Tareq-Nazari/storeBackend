@@ -35,6 +35,7 @@ class StoreController extends Controller
             'email' => 'required|email|unique:App\User|',
             'phone' => 'required|numeric:11',
             'cat_id' => 'required|integer',
+            'address' => 'string'
         ]);
 
         if ($validator->fails()) {
