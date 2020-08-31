@@ -94,7 +94,7 @@ class UserController extends Controller
             $tokenData = $user->createToken('Personal Access Token', ['shopOwner']);
         } else if ($user->role === 3) {
             $tokenData = $user->createToken('Personal Access Token', ['admin']);
-        } else if ($user->role===1) {
+        } else if ($user->role === 1) {
             $tokenData = $user->createToken('Personal Access Token', ['user']);
         }
         $token = $tokenData->token;
@@ -155,6 +155,23 @@ class UserController extends Controller
 
     }
 
+    public function editProfilePicture(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'pic' => 'required|image',
+        ]);
+
+        if ($validator->fails()) {
+            return \response()->json($validator->errors(), 400);
+        }
+        $pic = $request->pic;
+        if (DB::table('profiles')->where('user_id', Auth::user()->id)->update([
+            'pic' =>image_store( $pic)
+        ])) {
+            return \response('edit picture success', 200);
+        } else return \response('something is wrong', 400);
+    }
+
 
 //for basket
     public function addToBasket($product_id)
@@ -211,7 +228,7 @@ class UserController extends Controller
 
     }
 
-    // for stores
+// for stores
     public function searchStore(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -233,7 +250,7 @@ class UserController extends Controller
         return \response()->json($stores, 200);
     }
 
-    //for Factor
+//for Factor
     public function searchFactor(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -318,7 +335,7 @@ class UserController extends Controller
         return \response()->json($products, 200);
     }
 
-    //for users
+//for users
     public function allUsers()
     {
 
@@ -344,30 +361,6 @@ class UserController extends Controller
         ], 400);
     }
 
-    public function editUser(Request $request)
-    {
-
-
-        if (DB::table('profiles')->where('user_id', $request->id)
-                ->update([
-                    'name' => $request->name,
-                    'role' => $request->role,
-                    'address' => $request->address,
-                    'phone' => $request->phone,
-                    'pic' => $request->pic,
-
-                ]) && DB::table('users')->where('id', $request->id)->update([
-                'email' => $request->email,
-                'name' => $request->name
-            ])) {
-            return \response()->json([
-                "message" => "edit product success"
-            ], 200);
-
-        } else return \response()->json([
-            "message" => "something wrong"
-        ], 400);
-    }
 
     public function searchUser(Request $request)
     {
@@ -404,8 +397,9 @@ class UserController extends Controller
 
     }
 
-    //for comment
-    public function addProductComment(Request $request)
+//for comment
+    public
+    function addProductComment(Request $request)
     {
         $text = $request->text;
         $profile_id = DB::table('profile')->where('user_id', Auth::user()->id);
@@ -420,7 +414,8 @@ class UserController extends Controller
         } else return \response()->json('something is wrong', 400);
     }
 
-    public function addStoreComment(Request $request)
+    public
+    function addStoreComment(Request $request)
     {
         $text = $request->text;
         $profile_id = DB::table('profile')->where('user_id', Auth::user()->id);

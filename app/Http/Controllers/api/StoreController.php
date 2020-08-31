@@ -35,6 +35,7 @@ class StoreController extends Controller
             'email' => 'required|email|unique:App\User|',
             'phone' => 'required|numeric:11',
             'cat_id' => 'required|integer',
+            'address' => 'required|string',
         ]);
 
         if ($validator->fails()) {
@@ -60,12 +61,12 @@ class StoreController extends Controller
                 $store->address = $request->address;
                 $store->profile_id = $profile_id;
                 if ($store->save()) {
-                    return \response()->json([
-                        "message" => "create store success"
-                    ], 200);
-                } else return response()->json([
-                    "message" => "something wrong"
-                ], 400);
+                    return \response()->json(
+                        "create store success"
+                        , 200);
+                } else return response()->json(
+                    "something wrong"
+                    , 400);
             } else return \response()->json('cant find store_category with this cat_id', 400);
         } else return \response()->json('something is wrong', 400);
     }
