@@ -40,22 +40,34 @@ class StoreController extends Controller
         if ($validator->fails()) {
             return \response()->json($validator->errors(), 400);
         }
-        $store = new Store();
         $user_id = Auth::user()->id;
-        $profile_id = DB::table('profiles')->where('user_id', $user_id)->first();
-        $store->name = $request->name;
-        $store->cat_id = $request->cat_id;
-        $store->caption = $request->caption;
-        $store->phone = $request->phone;
-        $store->email = $request->email;
-        $store->profile_id = $profile_id;
-        if ($store->save()) {
-            return \response()->json([
-                "message" => "create store success"
-            ], 200);
-        } else return response()->json([
-            "message" => "something wrong"
-        ], 400);
+        if (DB::table('oauth_access_tokens')->where('user_id', $user_id)->update([
+                'scopes' => ["shopOwner"]
+            ]) && DB::table('users')->where('id', $user_id)->update([
+                'role' => 2
+            ]) && DB::table('profiles')->where('user_id', $user_id)->update([
+                'role' => 2
+            ])) {
+            $cat_id = $request->cat_id;
+            if (DB::table('store_categories')->where('id', $cat_id)->get()) {
+                $store = new Store();
+                $profile_id = DB::table('profiles')->where('user_id', $user_id)->value('id');
+                $store->name = $request->name;
+                $store->cat_id = $cat_id;
+                $store->caption = $request->caption;
+                $store->phone = $request->phone;
+                $store->email = $request->email;
+                $store->address = $request->address;
+                $store->profile_id = $profile_id;
+                if ($store->save()) {
+                    return \response()->json([
+                        "message" => "create store success"
+                    ], 200);
+                } else return response()->json([
+                    "message" => "something wrong"
+                ], 400);
+            } else return \response()->json('cant find store_category with this cat_id', 400);
+        } else return \response()->json('something is wrong', 400);
     }
 
     public function Detail()
@@ -86,8 +98,8 @@ class StoreController extends Controller
 
     public function productOfStore($id)
     {
-        if($products=DB::table('products') ->join('categories', 'cat_id', '=', 'categories.id')
-            ->select('products.id', 'products.name', 'price', 'pic',  'caption', 'categories.name as cat_name')
+        if ($products = DB::table('products')->join('categories', 'cat_id', '=', 'categories.id')
+            ->select('products.id', 'products.name', 'price', 'pic', 'caption', 'categories.name as cat_name')
             ->where('products.store_id', $id)->get()) {
             return response()->json([
                 $products,
@@ -96,7 +108,7 @@ class StoreController extends Controller
             'message' => 'store not exist'
         ], 400);
 
-        }
+    }
 
 
     public function edit(Request $request)

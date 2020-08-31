@@ -90,11 +90,11 @@ Route::middleware([])->group(function () {
         Route::post('/roles', 'api\AdminController@roles');
     });
 });
+
 Route::middleware(['auth:api', 'scopes:shopOwner'])->group(function () {
     Route::prefix('shopOwner')->group(function () {
         Route::post('/searchFactor', 'api\ShopOwnerController@searchFactor');
         Route::prefix('store')->group(function () {
-            Route::post('/create', 'api\StoreController@create');
             Route::post('/edit', 'api\StoreController@edit');
             Route::post('/detail', 'api\StoreController@Detail');
             Route::post('/comments', 'api\ShopOwnerController@storeComments');
@@ -136,6 +136,7 @@ Route::prefix('users')->group(function () {
         });
         Route::prefix('store')->group(function () {
             Route::post('/add_comment', 'api\UserController@addStoreComment');
+            Route::post('/create', 'api\StoreController@create');
 
         });
         Route::post('/factor', 'api\UserController@searchFactor');

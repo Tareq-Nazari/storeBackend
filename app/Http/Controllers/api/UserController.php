@@ -90,11 +90,11 @@ class UserController extends Controller
             ], 401);
         }
         $user = $request->user();
-        if ($user->role == 2) {
+        if ($user->role === 2) {
             $tokenData = $user->createToken('Personal Access Token', ['shopOwner']);
-        } else if ($user->role == 3) {
+        } else if ($user->role === 3) {
             $tokenData = $user->createToken('Personal Access Token', ['admin']);
-        } else {
+        } else if ($user->role===1) {
             $tokenData = $user->createToken('Personal Access Token', ['user']);
         }
         $token = $tokenData->token;
@@ -452,4 +452,6 @@ class UserController extends Controller
 
         } else  return \response()->json('there is no comment', 400);
     }
+
+
 }
