@@ -21,7 +21,7 @@ class AdminController extends Controller
         if ($stores) {
             return response()->json(
                 $stores
-            , 200);
+                , 200);
         } else return response()->json([
             "message" => "something is wrong"
         ], 400);
@@ -71,8 +71,7 @@ class AdminController extends Controller
 //            'phone' => 'numeric:11',
 //            'email' => 'email',
 //            'profile_id' => 'integer',
-//            'header_pic' => 'image',
-//            'profile_pic' => 'image',
+//
 //
 //        ]);
 //
@@ -83,9 +82,7 @@ class AdminController extends Controller
         if ($users = DB::table('stores')->where('id', $store_id)->update([
             'name' => $request->name,
             'cat_id' => $request->cat_id,
-            'profile_pic' => image_store($request->profile_pic),
             'phone' => $request->phone,
-            'header_pic' => image_store($request->header_pic),
             'email' => $request->email,
             'address' => $request->address,
             'caption' => $request->caption,
@@ -98,6 +95,45 @@ class AdminController extends Controller
             "message" => "something wrong"
         ], 400);
     }
+
+    public function editHeaderPic(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'header_pic' => 'required|image',
+            'id' => 'required|integer',
+        ]);
+
+        if ($validator->fails()) {
+            return \response()->json($validator->errors(), 400);
+        }
+        $pic = $request->header_pic;
+        $store_id=$request->id;
+        if (DB::table('stores')->where('id', $store_id)->update([
+            'header_pic' => image_store($pic)
+        ])) {
+            return \response('edit headerPicture success', 200);
+        } else return \response('something is wrong', 400);
+    }
+
+    public function editProfilePic(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'profile_pic' => 'required|image',
+            'id' => 'required|integer',
+        ]);
+
+        if ($validator->fails()) {
+            return \response()->json($validator->errors(), 400);
+        }
+        $pic = $request->profile_pic;
+        $store_id= $request->id;
+        if (DB::table('stores')->where('id', $store_id)->update([
+            'profile_pic' =>image_store( $pic)
+        ])) {
+            return \response('edit profilePicture success', 200);
+        } else return \response('something is wrong', 400);
+    }
+
 
     public function deleteStore($store_id)
     {
@@ -312,6 +348,137 @@ class AdminController extends Controller
         if ($roles) {
             return \response()->json($roles, 200);
         } else  return \response()->json(['message' => 'there is no role'], 400);
+    }
+
+    //for comments ProductComment
+    public function productComments()
+    {
+        $comments = DB::table('product_comment')->get();
+        if ($comments) {
+            return \response()->json($comments, 200);
+        } else   return \response()->json('there is no comment', 400);
+
+    }
+
+    public function deleteProductComment($id)
+    {
+        if (DB::table('product_comment')->where('id', $id)->delete()) {
+            return \response()->json('comment deleted', 200);
+        } else   return \response()->json('there is no comment with this id', 400);
+
+    }
+
+
+    public function searchProductComment(Request $request)
+    {
+        $comment_id = $request->id;
+        $profile_id = $request->profile_id;
+        $product_id = $request->product_id;
+        $comments = DB::table('product_comment')
+            ->when($comment_id, function ($query, $comment_id) {
+                return $query->where('id', $comment_id);
+            })->when($profile_id, function ($query, $profile_id) {
+                return $query->where('profile_id', $profile_id);
+            })->when($product_id, function ($query, $product_id) {
+                return $query->where('product_id', $product_id);
+            })->get();
+        if ($comments) {
+            return \response()->json($comments, 200);
+        } else   return \response()->json('there is no comment', 400);
+
+    }
+
+    //for comments StoreComment
+    public function searchStoreComment(Request $request)
+    {
+        $comment_id = $request->id;
+        $profile_id = $request->profile_id;
+        $store_id = $request->store_id;
+        $comments = DB::table('store_comment')
+            ->when($comment_id, function ($query, $comment_id) {
+                return $query->where('id', $comment_id);
+            })->when($profile_id, function ($query, $profile_id) {
+                return $query->where('profile_id', $profile_id);
+            })->when($store_id, function ($query, $store_id) {
+                return $query->where('store_id', $store_id);
+            })->get();
+        if ($comments) {
+            return \response()->json($comments, 200);
+        } else   return \response()->json('there is no comment', 400);
+
+    }
+
+    public function storeComments()
+    {
+        $comments = DB::table('store_comment')->get();
+        if ($comments) {
+            return \response()->json($comments, 200);
+        } else   return \response()->json('there is no comment', 400);
+
+    }
+
+    public function deleteStoreComment($id)
+    {
+        if (DB::table('store_comment')->where('id', $id)->delete()) {
+            return \response()->json('comment deleted', 200);
+        } else   return \response()->json('there is no comment with this id', 400);
+
+    }
+
+    //for edit profile
+    public function editProfile(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer',
+            'name' => 'string|max:255',
+            'address' => 'string|max:255',
+            'phone' => 'numeric:11',
+        ]);
+
+        if ($validator->fails()) {
+            return \response()->json($validator->errors(), 400);
+        }
+        $user_id = $request->id;
+        if (DB::table('users')->where('id', $user_id)) {
+            DB::table('profiles')->where('user_id', $user_id)->update([
+                'name' => $request->name,
+                'phone' => $request->phone,
+                'address' => $request->address,
+
+            ]);
+            DB::table('users')->where('id', $user_id)->update([
+                'name' => $request->name,
+                'email' => $request->email,
+            ]);
+            return \response()->json([
+                "message" => "edit store success"
+            ], 200);
+
+        } else return \response()->json(
+            "there is no user with this id"
+            , 400);
+
+    }
+
+    public function editProfilePicture(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'pic' => 'required|image',
+            'id' => 'required|integer',
+        ]);
+
+        if ($validator->fails()) {
+            return \response()->json($validator->errors(), 400);
+        }
+        $user_id = $request->id;
+        $pic = $request->pic;
+
+        if (DB::table('profiles')->where('user_id', $user_id)->update([
+            'pic' => $pic
+        ])) {
+            return \response('edit picture success', 200);
+        } else return \response('there is no profile with this id', 400);
+
     }
 
 }

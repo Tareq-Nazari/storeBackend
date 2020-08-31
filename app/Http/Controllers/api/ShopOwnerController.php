@@ -6,11 +6,85 @@ use App\Category;
 use App\Http\Controllers\Controller;
 use App\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class ShopOwnerController extends Controller
 {
+    //for edit profile
+    public function editProfile(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'string|max:25',
+            'caption' => 'string|max:1000',
+            'address' => 'string|max:255',
+            'phone' => 'numeric:11',
+            'cat_id' => 'integer',
+        ]);
+
+        if ($validator->fails()) {
+            return \response()->json($validator->errors(), 400);
+        }
+        $cat_id = $request->cat_id;
+        if (DB::table('store_categories')->where('id', $cat_id)->get()) {
+            $store_id = findStoreId();
+            if (
+            DB::table('stores')->where('id', $store_id)->update([
+                'name' => $request->name,
+                'phone' => $request->phone,
+                'address' => $request->address,
+                'cat_id' => $cat_id,
+                'caption' => $request->caption,
+
+            ])) {
+                return \response()->json([
+                    "message" => "edit store success"
+                ], 200);
+
+            } else return \response()->json([
+                "message" => "something wrong"
+            ], 400);
+        } else return \response()->json(
+            "there is no category with this cat_id"
+            , 400);
+
+    }
+
+    public function editHeaderPic(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'header_pic' => 'required|image',
+        ]);
+
+        if ($validator->fails()) {
+            return \response()->json($validator->errors(), 400);
+        }
+        $pic = $request->header_pic;
+        if (DB::table('stores')->where('id', findStoreId())->update([
+            'header_pic' => image_store($pic)
+        ])) {
+            return \response('edit headerPicture success', 200);
+        } else return \response('something is wrong', 400);
+    }
+
+    public function editProfilePic(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'profile_pic' => 'required|image',
+        ]);
+
+        if ($validator->fails()) {
+            return \response()->json($validator->errors(), 400);
+        }
+        $pic = $request->profile_pic;
+        if (DB::table('stores')->where('id', findStoreId())->update([
+            'profile_pic' =>image_store( $pic)
+        ])) {
+            return \response('edit profilePicture success', 200);
+        } else return \response('something is wrong', 400);
+    }
+
 
     public function searchProduct(Request $request)
     {
