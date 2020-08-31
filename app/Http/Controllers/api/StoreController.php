@@ -88,7 +88,7 @@ class StoreController extends Controller
     {
         if ($store = DB::table('stores')
             ->join('store_categories', 'cat_id', '=', 'store_categories.id')
-            ->select('stores.id', 'stores.name', 'stores.address', 'stores.phone', 'stores.header_pic', 'stores.profile_pic', 'stores.caption', 'store_categories.name as cat_name')
+            ->select('stores.id','stores.email', 'stores.name', 'stores.address', 'stores.phone', 'stores.header_pic', 'stores.profile_pic', 'stores.caption', 'store_categories.name as cat_name')
             ->where('stores.id', $id)->get()) {
             return response()->json([
                 $store,
