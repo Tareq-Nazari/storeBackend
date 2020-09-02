@@ -78,6 +78,7 @@ Route::middleware([])->group(function () {
             Route::get('/all', 'api\AdminController@allProduct');
             Route::get('/delete{id}', 'api\AdminController@deleteProduct');
             Route::post('/edit', 'api\AdminController@editProduct');
+            Route::post('/edit_pic', 'api\AdminController@editProductPic');
             Route::get('/search', 'api\AdminController@searchProduct');
         });
         Route::prefix('users')->group(function () {
@@ -138,6 +139,7 @@ Route::middleware(['auth:api', 'scopes:shopOwner'])->group(function () {
             Route::get('/search', 'api\ShopOwnerController@searchProduct');
             Route::post('/create', 'api\ProductController@create');
             Route::post('/edit', 'api\ProductController@edit');
+            Route::post('/edit_pic', 'api\ProductController@editPic');
             Route::get('/delete{id}', 'api\ProductController@delete');
             Route::get('/detail{id}', 'api\ProductController@Detail');
             Route::get('/comments', 'api\ShopOwnerController@productComments');

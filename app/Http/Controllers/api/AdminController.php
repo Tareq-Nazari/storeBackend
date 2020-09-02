@@ -257,7 +257,8 @@ class AdminController extends Controller
         if ($store_id1) {
             $product->store_id = $store_id;
             $product->caption = $request->caption;
-            $product->pic = image_store($request->file);
+            $product->pic = image_store($request->pic);
+            $product->tumbnail_pic=image_thumbnail($request->pic);
             if ($product->save()) {
                 return response()->json([
                     'message' => 'the product created'
@@ -279,7 +280,6 @@ class AdminController extends Controller
             ->update([
                 'name' => $request->name,
                 'cat_id' => $request->cat_id,
-                'pic' => image_store($pic),
                 'price' => $request->price,
                 'caption' => $request->caption,
 
@@ -292,6 +292,32 @@ class AdminController extends Controller
             "message" => "something wrong"
         ], 400);
     }
+    public function editProductPic(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'pic' => 'required|image',
+            'id' => 'required|integer',
+        ]);
+
+        if ($validator->fails()) {
+            return \response()->json($validator->errors(), 400);
+        }
+        $product_id = $request->id;
+        if (DB::table('products')->where('id',$product_id)
+            ->update([
+                'pic' =>image_store($request->pic),
+                'tumbnail_pic' =>image_thumbnail($request->pic),
+
+            ])) {
+            return \response()->json([
+                "message" => "edit product_pic success"
+            ], 200);
+
+        } else return \response()->json([
+            "message" => "something wrong"
+        ], 400);
+    }
+
 
 
     public function deleteProduct($id)
@@ -480,5 +506,6 @@ class AdminController extends Controller
         } else return \response('there is no profile with this id', 400);
 
     }
+
 
 }
