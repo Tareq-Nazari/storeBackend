@@ -9,28 +9,30 @@ use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\Console\Input\Input;
+use function GuzzleHttp\Psr7\str;
 
 class FactorController extends Controller
 {
     //ساخت فاکتور
     public function PurchaseInvoice(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'store_name' => 'required|string|max:255',
-            'product_name' => 'required|string|max:255',
-            'payment_receipt' => 'required|integer',
-            'store_id' => 'required|integer',
-            'product_id' => 'required|integer',
-            'profile_id' => 'required|integer',
-            'price' => 'required|integer',
-            'created_at' => 'required|date'
-
-        ]);
-
-        if ($validator->fails()) {
-            return \response()->json($validator->errors(), 400);
-        }
+//        $validator = Validator::make($request->all(), [
+//            'name' => 'required|string|max:255',
+//            'store_name' => 'required|string|max:255',
+//            'product_name' => 'required|string|max:255',
+//            'payment_receipt' => 'required|integer',
+//            'store_id' => 'required|integer',
+//            'product_id' => 'required|integer',
+//            'profile_id' => 'required|integer',
+//            'price' => 'required|integer',
+//            'created_at' => 'required|date'
+//
+//        ]);
+//
+//        if ($validator->fails()) {
+//            return \response()->json($validator->errors(), 400);
+//        }
         $factor = new Factor();
         $factor->payment_receipt = rand(111111, 999999);
         $factor->profile_id = $request->profile_id;
@@ -54,16 +56,34 @@ class FactorController extends Controller
 
     }
 
+    public function test(Request $request)
+    {
+        $i = 0;
+        $op = [];
+        $opp = [];
+        for ($p=0; $p<100;$p++) {
+
+            if ($request->name[$p]!=null){
+                $op=$request->name[$p];
+            }
+            else $p=100;
+        }
+
+        return \response()->json($op, 200);
+
+
+    }
+
     public function all()
     {
-       $factors=DB::table('factor')->get();
-       if($factors){
-           return response()->json(
-               $factors
-           , 200);
-       } else return \response()->json([
-           "message" => "there is no factor"
-       ], 400);
+        $factors = DB::table('factor')->get();
+        if ($factors) {
+            return response()->json(
+                $factors
+                , 200);
+        } else return \response()->json([
+            "message" => "there is no factor"
+        ], 400);
 
 
     }
