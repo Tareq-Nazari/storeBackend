@@ -204,7 +204,8 @@ class UserController extends Controller
 
     public function deleteFromBasket($basket_id)
     {
-        if (DB::table('basket')->where('id',$basket_id)->delete()) {
+        $profile_id=DB::table('profiles')->where('user_id',Auth::user()->id)->value('id');
+        if (DB::table('basket')->where('id',$basket_id)->where('profile_id',$profile_id)->delete()) {
             return \response()->json([
                 "message" => "product deleted from your basket"
             ], 200);
