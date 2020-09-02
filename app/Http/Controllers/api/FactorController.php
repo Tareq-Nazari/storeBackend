@@ -58,18 +58,8 @@ class FactorController extends Controller
 
     public function test(Request $request)
     {
-        $i = 0;
-        $op = [];
-        $opp = [];
-        for ($p=0; $p<100;$p++) {
-
-            if ($request->name[$p]!=null){
-                $op=$request->name[$p];
-            }
-            else $p=100;
-        }
-
-        return \response()->json($op, 200);
+      $image=image_thumbnail($request->pic);
+        return \response()->json($image, 200);
 
 
     }

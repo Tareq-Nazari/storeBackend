@@ -63,8 +63,8 @@ class ProductController extends Controller
             $product->name = $request->name;
             $product->caption = $request->caption;
             $product->price = $request->price;
-            $product->pic = $request->pic;
-            image_store($request->pic);
+            $product->pic =image_store($request->pic);
+            $product->tumbnail_pic=image_thumbnail($request->pic);
             $product->cat_id = $cat_id;
             $product->store_id = $store_id;
             if ($product->save()) {
@@ -97,7 +97,6 @@ class ProductController extends Controller
             'cat_id' => 'required|integer',
             'product_id' => 'required|integer',
             'price' => 'required|integer',
-            'pic' => 'required|image',
 
         ]);
 
@@ -109,13 +108,37 @@ class ProductController extends Controller
             ->where('id', $request->id)->update([
                 'name' => $request->name,
                 'cat_id' => $request->cat_id,
-                'pic' => image_store($request->pic),
                 'price' => $request->price,
                 'caption' => $request->caption,
 
             ])) {
             return \response()->json([
                 "message" => "edit product success"
+            ], 200);
+
+        } else return \response()->json([
+            "message" => "something wrong"
+        ], 400);
+    }
+
+ public function editPic(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'pic' => 'required|image',
+        ]);
+
+        if ($validator->fails()) {
+            return \response()->json($validator->errors(), 400);
+        }
+        $store_id = findStoreId();
+        if (DB::table('products')->where('store_id', $store_id)
+            ->where('id', $request->id)->update([
+                'pic' =>image_store($request->pic),
+                'tumbnail_pic' =>image_thumbnail($request->pic),
+
+            ])) {
+            return \response()->json([
+                "message" => "edit product_pic success"
             ], 200);
 
         } else return \response()->json([

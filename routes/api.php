@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 //    return $request->user();
 //});
 Route::prefix('product')->group(function () {
-    Route::get('/search', 'api\UserController@searchProduct');
+    Route::post('/search', 'api\UserController@searchProduct');
     Route::get('/all', 'api\ProductController@allProduct');
     Route::get('/comments', 'api\UserController@ProductComments');
 
@@ -27,7 +27,7 @@ Route::prefix('product')->group(function () {
 Route::get('product/detail/{id}', 'api\ProductController@Detail');
 Route::prefix('store')->group(function () {
 
-    Route::get('/search', 'api\UserController@searchStore');
+    Route::post('/search', 'api\UserController@searchStore');
     Route::get('/all', 'api\StoreController@allStore');
     Route::get('/comments', 'api\UserController@StoreComments');
 
@@ -43,8 +43,8 @@ Route::post('/register', 'api\UserController@register');
 Route::prefix('category')->group(function () {
     Route::get('/store_all', 'api\CategoryController@allStore');//دسته بندی مغازه ها
     Route::get('/product_all', 'api\CategoryController@allProduct');//دسته بندی محصولات
-    Route::get('/searchStore', 'api\CategoryController@searchCategoryStore');//سرچ دسته بندی مغازه
-    Route::get('/searchProduct', 'api\CategoryController@searchProductStore');//سرچ دسته بندی محصولات
+    Route::post('/searchStore', 'api\CategoryController@searchCategoryStore');//سرچ دسته بندی مغازه
+    Route::post('/searchProduct', 'api\CategoryController@searchProductStore');//سرچ دسته بندی محصولات
 });
 
 Route::middleware([])->group(function () {
@@ -56,7 +56,7 @@ Route::middleware([])->group(function () {
             Route::post('/edit', 'api\AdminController@editStore');
             Route::post('/edit_profile_pic', 'api\AdminController@editProfilePic');
             Route::post('/edit_header_pic', 'api\AdminController@editHeaderPic');
-            Route::get('/search', 'api\AdminController@searchStore');
+            Route::post('/search', 'api\AdminController@searchStore');
 
         });
         Route::prefix('category')->group(function () {
@@ -64,14 +64,14 @@ Route::middleware([])->group(function () {
                 Route::get('/all', 'api\CategoryController@allStore');// دسته بندی محصولات یک مغازه را برمی گرداند
                 Route::post('/add', 'api\CategoryController@addStoreCategory');
                 Route::get('/delete{cat_id}', 'api\CategoryController@deleteStoreCategory');
-                Route::get('/search', 'api\CategoryController@searchCategoryStore');
+                Route::post('/search', 'api\CategoryController@searchCategoryStore');
 
             });
             Route::prefix('product')->group(function () {
                 Route::get('/all', 'api\CategoryController@allProduct');// دسته بندی محصولات یک مغازه را برمی گرداند
                 Route::post('/add', 'api\CategoryController@addProductCategory');
                 Route::get('/delete{id}', 'api\CategoryController@deleteProductCategory');
-                Route::get('/search', 'api\CategoryController@searchProductStore');
+                Route::post('/search', 'api\CategoryController@searchProductStore');
             });
         });
         Route::prefix('product')->group(function () {
@@ -79,32 +79,33 @@ Route::middleware([])->group(function () {
             Route::get('/all', 'api\AdminController@allProduct');
             Route::get('/delete{id}', 'api\AdminController@deleteProduct');
             Route::post('/edit', 'api\AdminController@editProduct');
-            Route::get('/search', 'api\AdminController@searchProduct');
+            Route::post('/edit_pic', 'api\AdminController@editProductPic');
+            Route::post('/search', 'api\AdminController@searchProduct');
         });
         Route::prefix('users')->group(function () {
             Route::get('/all', 'api\UserController@allUsers');
             Route::post('/edit', 'api\AdminController@editProfile');
             Route::post('/edit_Profile_pic', 'api\AdminController@editProfilePicture');
             Route::get('/delete{id}', 'api\UserController@deleteUser');
-            Route::get('/search', 'api\UserController@searchUser');
+            Route::post('/search', 'api\UserController@searchUser');
             Route::post('/add', 'api\UserController@register');
 
 
         });
         Route::prefix('factors')->group(function () {
             Route::get('/all', 'api\FactorController@all');
-            Route::get('/search', 'api\AdminController@searchFactor');
+            Route::post('/search', 'api\AdminController@searchFactor');
         });
         Route::prefix('comment')->group(function () {
             Route::prefix('store_comment')->group(function () {
                 Route::get('/all', 'api\AdminController@storeComments');
-                Route::get('/search', 'api\AdminController@searchStoreComment');
+                Route::post('/search', 'api\AdminController@searchStoreComment');
                 Route::get('/delete{id}', 'api\AdminController@deleteStoreComment');
 
             });
             Route::prefix('product_comment')->group(function () {
                 Route::get('/all', 'api\AdminController@productComments');
-              Route::get('/search', 'api\AdminController@searchProductComment');
+              Route::post('/search', 'api\AdminController@searchProductComment');
                 Route::get('/delete{id}', 'api\AdminController@deleteProductComment');
             });
 
@@ -113,7 +114,7 @@ Route::middleware([])->group(function () {
     });
 });
 
-Route::middleware(['auth:api', 'scopes:shopOwner'])->group(function () {
+Route::middleware([])->group(function () {
     Route::prefix('shopOwner')->group(function () {
         Route::prefix('profile')->group(function () { //پروفایل صاحب مغازه
             Route::post('/edit', 'api\UserController@editProfile');
@@ -136,9 +137,10 @@ Route::middleware(['auth:api', 'scopes:shopOwner'])->group(function () {
         });
         Route::prefix('product')->group(function () {
             Route::get('/all', 'api\ProductController@allProductOfStore');
-            Route::get('/search', 'api\ShopOwnerController@searchProduct');
+            Route::post('/search', 'api\ShopOwnerController@searchProduct');
             Route::post('/create', 'api\ProductController@create');
             Route::post('/edit', 'api\ProductController@edit');
+            Route::post('/edit_pic', 'api\ProductController@editPic');
             Route::get('/delete{id}', 'api\ProductController@delete');
             Route::get('/detail/{id}', 'api\ProductController@Detail');
             Route::get('/comments', 'api\ShopOwnerController@productComments');
@@ -148,7 +150,7 @@ Route::middleware(['auth:api', 'scopes:shopOwner'])->group(function () {
             Route::get('/all', 'api\CategoryController@productOfStore');// دسته بندی محصولات یک مغازه را برمی گرداند
             Route::post('/add', 'api\CategoryController@addCategoryProductToStore');
             Route::get('/delete', 'api\CategoryController@deleteCategoryProductFromStore');
-            Route::get('/search', 'api\CategoryController@searchProductOneStore');
+            Route::post('/search', 'api\CategoryController@searchProductOneStore');
 
         });
 

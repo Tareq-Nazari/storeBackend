@@ -5,6 +5,7 @@ use App\Store;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Facades\Image;
 
 if (!function_exists('image_store')) {
     function image_store($image)
@@ -14,6 +15,17 @@ if (!function_exists('image_store')) {
         $file = $image;
         $file->move($destination, $filename);
         return $filename;
+    }
+
+    function image_thumbnail($image)
+    {
+        $image_name = time() . '.' . $image->getClientOriginalExtension();
+        $destinationPath = base_path() . '/thumbnail/';
+        $resize_image = Image::make($image->getRealPath());
+        $resize_image->resize(150, 150, function ($constraint) {
+            $constraint->aspectRatio();
+        })->save($destinationPath . $image_name);
+        return $image_name;
     }
 
     function image_delete($image_path)
