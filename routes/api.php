@@ -113,7 +113,7 @@ Route::middleware([])->group(function () {
     });
 });
 
-Route::middleware([])->group(function () {
+Route::middleware(['auth:api','scopes:shopOwner'])->group(function () {
     Route::prefix('shopOwner')->group(function () {
         Route::prefix('profile')->group(function () { //پروفایل صاحب مغازه
             Route::post('/edit', 'api\UserController@editProfile');
