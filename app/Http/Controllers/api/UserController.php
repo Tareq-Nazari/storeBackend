@@ -166,7 +166,7 @@ class UserController extends Controller
         }
         $pic = $request->pic;
         if (DB::table('profiles')->where('user_id', Auth::user()->id)->update([
-            'pic' =>image_store( $pic)
+            'pic' => image_store($pic)
         ])) {
             return \response('edit picture success', 200);
         } else return \response('something is wrong', 400);
@@ -204,8 +204,8 @@ class UserController extends Controller
 
     public function deleteFromBasket($basket_id)
     {
-        $profile_id=DB::table('profiles')->where('user_id',Auth::user()->id)->value('id');
-        if (DB::table('basket')->where('id',$basket_id)->where('profile_id',$profile_id)->delete()) {
+        $profile_id = DB::table('profiles')->where('user_id', Auth::user()->id)->value('id');
+        if (DB::table('basket')->where('id', $basket_id)->where('profile_id', $profile_id)->delete()) {
             return \response()->json([
                 "message" => "product deleted from your basket"
             ], 200);
@@ -355,6 +355,8 @@ class UserController extends Controller
         ], 400);
     }
 
+
+
     public function deleteUser($id)
     {
         if (DB::table('users')->where('id', $id)->delete() && DB::table('profiles')->where('user_id', $id)->delete()) {
@@ -385,7 +387,7 @@ class UserController extends Controller
             ->when($name, function ($query, $name) {
                 return $query->where('profiles.name', 'like', '%' . $name . '%');
             })->when($id, function ($query, $id) {
-                return $query->where('user_id', $id);
+                return $query->where('profiles.user_id', $id);
             })->when($profile_id, function ($query, $profile_id) {
                 return $query->where('profiles.id', $profile_id);
             })->when($address, function ($query, $address) {

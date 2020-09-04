@@ -7,6 +7,7 @@ use App\Product;
 use App\Product_categories;
 use App\Store;
 use App\store_categories;
+use http\Env\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -96,14 +97,16 @@ class CategoryController extends Controller
         if ($validator->fails()) {
             return \response()->json($validator->errors(), 400);
         }
-        $category = new Product_categories();
-        $category->name = $request->name;
-        $category->store_id = $request->store_id;
-        if ($category->save()) {
-            return response()->json(
-                $category
-                , 200);
-        } else return response()->json(['message' => 'something wrong'], 400);
+        if (DB::table('stores')->find($request->store_id)) {
+            $category = new Product_categories();
+            $category->name = $request->name;
+            $category->store_id = $request->store_id;
+            if ($category->save()) {
+                return response()->json(
+                    $category
+                    , 200);
+            } else return response()->json(['message' => 'something wrong'], 400);
+        }else return \response()->json('there is no store with this id',400);
 
     }
 

@@ -511,7 +511,7 @@ class AdminController extends Controller
         $pic = $request->pic;
 
         if (DB::table('profiles')->where('user_id', $user_id)->update([
-            'pic' => $pic
+            'pic' => image_store($pic)
         ])) {
             return \response('edit picture success', 200);
         } else return \response('there is no profile with this id', 400);
