@@ -93,6 +93,8 @@ class ShopOwnerController extends Controller
             'cat_id' => 'integer',
             'product_id' => 'integer',
             'price' => 'integer',
+            'size' => 'string',
+            'color' => 'string',
             'max' => 'integer',
             'min' => 'integer',
         ]);
@@ -102,6 +104,8 @@ class ShopOwnerController extends Controller
         }
 
         $price = $request->price;
+        $color = $request->color;
+        $size = $request->size;
         $name = $request->name;
         $store_id = findStoreId();
         $cat_id = $request->cat_id;
@@ -116,8 +120,14 @@ class ShopOwnerController extends Controller
                 return $query->where('price', $price);
             })->when($product_id, function ($query, $product_id) {
                 return $query->where('id', $product_id);
-            })->when($max, $min, function ($query, $min, $max) {
-                return $query->whereBetween('price', [$min, $max]);
+            })->when($max, function ($query, $max) {
+                return $query->where('price','<=', $max);
+            })->when($min, function ($query, $min) {
+                return $query->where('price','>=', $min);
+            })->when($color, function ($query, $color) {
+                return $query->where('color', $color);
+            })->when($size, function ($query, $size) {
+                return $query->where('size', $size);
             })->when($cat_id, function ($query, $cat_id) {
                 return $query->where('cat_id', $cat_id);
             })->get();

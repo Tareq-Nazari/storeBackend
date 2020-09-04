@@ -40,6 +40,25 @@ class ProductController extends Controller
         ], 400);
 
     }
+    public function oneProduct($id)
+    {
+
+        $product=DB::table('products')
+        ->join('categories', 'cat_id', '=', 'categories.id')
+        ->select('products.*', 'categories.name as cat_name')
+            ->where('products.id',$id)->get();
+        if($product){
+            return \response()->json(
+                $product
+                , 200);
+
+        } else return \response()->json(
+            "there is no product with this id"
+            , 400);
+
+
+
+    }
 
     public function create(Request $request)
     {
@@ -49,6 +68,8 @@ class ProductController extends Controller
             'cat_id' => 'required|integer',
             'price' => 'required|integer',
             'pic' => 'required|image',
+            'size' => 'required|string|max:255',
+            'color' => 'required|string|max:255',
 
         ]);
 
@@ -66,6 +87,8 @@ class ProductController extends Controller
             $product->pic =image_store($request->pic);
             $product->tumbnail_pic=image_thumbnail($request->pic);
             $product->cat_id = $cat_id;
+            $product->size = $request->size;
+            $product->color = $request->color;
             $product->store_id = $store_id;
             if ($product->save()) {
 
@@ -94,6 +117,8 @@ class ProductController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'caption' => 'required|string|max:255',
+            'size' => 'required|string|max:255',
+            'color' => 'required|string|max:255',
             'cat_id' => 'required|integer',
             'product_id' => 'required|integer',
             'price' => 'required|integer',
@@ -110,6 +135,8 @@ class ProductController extends Controller
                 'cat_id' => $request->cat_id,
                 'price' => $request->price,
                 'caption' => $request->caption,
+                'size' => $request->size,
+                'color' => $request->color,
 
             ])) {
             return \response()->json([
