@@ -29,6 +29,7 @@ Route::prefix('store')->group(function () {
 
     Route::post('/search', 'api\UserController@searchStore');
     Route::get('/all', 'api\StoreController@allStore');
+    Route::get('/one{id}', 'api\StoreController@oneStore');
     Route::get('/comments', 'api\UserController@StoreComments');
 
 });
