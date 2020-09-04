@@ -128,8 +128,8 @@ Route::middleware(['auth:api','scopes:shopOwner'])->group(function () {
             Route::get('/delete_Comment{comment_id}', 'api\ShopOwnerController@deleteStoreComment');
             Route::prefix('profile')->group(function () {// پروفایل مغازه
                 Route::post('/edit', 'api\CategoryController@editProfile');// دسته بندی محصولات یک مغازه را برمی گرداند
-                Route::post('/edit_header_pic', 'api\CategoryController@editHeaderPic');
-                Route::post('/edit_profile_pic', 'api\CategoryController@editProfilePic');
+                Route::post('/edit_header_pic', 'api\shopOwnerController@editHeaderPic');
+                Route::post('/edit_profile_pic', 'api\shopOwnerController@editProfilePic');
 
 
             });
