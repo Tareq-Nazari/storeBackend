@@ -22,16 +22,12 @@ Route::prefix('product')->group(function () {
     Route::get('/all', 'api\ProductController@allProduct');
     Route::get('/one{id}', 'api\ProductController@oneProduct');
     Route::get('/comments', 'api\UserController@ProductComments');
-
-
 });
 Route::prefix('store')->group(function () {
-
     Route::post('/search', 'api\UserController@searchStore');
     Route::get('/all', 'api\StoreController@allStore');
     Route::get('/one{id}', 'api\StoreController@oneStore');
     Route::get('/comments', 'api\UserController@StoreComments');
-
 });
 Route::get('/store{id}', 'api\StoreController@store_detail');//اطلاعات یک مغازه را برمی گرداند (id مغازه باید فرستاده شود)
 Route::get('/product_store{id}', 'api\StoreController@productOfStore');//محصولات یک مغازه را بر می گرداند
@@ -45,7 +41,6 @@ Route::prefix('category')->group(function () {
     Route::post('/searchStore', 'api\CategoryController@searchCategoryStore');//سرچ دسته بندی مغازه
     Route::post('/searchProduct', 'api\CategoryController@searchProductStore');//سرچ دسته بندی محصولات
 });
-
 Route::middleware([])->group(function () {
     Route::prefix('admin')->group(function () {
         Route::prefix('store')->group(function () {
@@ -56,7 +51,6 @@ Route::middleware([])->group(function () {
             Route::post('/edit_profile_pic', 'api\AdminController@editProfilePic');
             Route::post('/edit_header_pic', 'api\AdminController@editHeaderPic');
             Route::post('/search', 'api\AdminController@searchStore');
-
         });
         Route::prefix('category')->group(function () {
             Route::prefix('store')->group(function () {
@@ -127,11 +121,9 @@ Route::middleware(['auth:api','scopes:shopOwner'])->group(function () {
             Route::get('/comments', 'api\ShopOwnerController@storeComments');
             Route::get('/delete_Comment{comment_id}', 'api\ShopOwnerController@deleteStoreComment');
             Route::prefix('profile')->group(function () {// پروفایل مغازه
-                Route::post('/edit', 'api\CategoryController@editProfile');// دسته بندی محصولات یک مغازه را برمی گرداند
-                Route::post('/edit_header_pic', 'api\shopOwnerController@editHeaderPic');
-                Route::post('/edit_profile_pic', 'api\shopOwnerController@editProfilePic');
-
-
+                Route::post('/edit', 'api\ShopOwnerController@editProfile');// دسته بندی محصولات یک مغازه را برمی گرداند
+                Route::post('/edit_header_pic', 'api\ShopOwnerController@editHeaderPic');
+                Route::post('/edit_profile_pic', 'api\ShopOwnerController@editProfilePic');
             });
         });
         Route::prefix('product')->group(function () {
