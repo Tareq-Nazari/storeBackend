@@ -306,6 +306,8 @@ class UserController extends Controller
 
         $price = $request->price;
         $name = $request->name;
+        $color = $request->color;
+        $size = $request->size;
         $store_id = $request->store_id;
         $cat_id = $request->cat_id;
         $product_id = $request->id;
@@ -324,10 +326,14 @@ class UserController extends Controller
                 return $query->where('price', $price);
             })->when($product_id, function ($query, $product_id) {
                 return $query->where('id', $product_id);
+            })->when($color, function ($query, $color) {
+                return $query->where('color', $color);
+            })->when($size, function ($query, $size) {
+                return $query->where('size', $size);
             })->when($min, function ($query, $min) {
-                return $query->where('price', '>', $min);
+                return $query->where('price', '>=', $min);
             })->when($max, function ($query, $max) {
-                return $query->where('price', '<', $max);
+                return $query->where('price', '<=', $max);
             })->when($cat_id, function ($query, $cat_id) {
                 return $query->where('cat_id', $cat_id);
             })->get();

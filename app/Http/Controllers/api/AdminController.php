@@ -107,7 +107,7 @@ class AdminController extends Controller
             return \response()->json($validator->errors(), 400);
         }
         $pic = $request->header_pic;
-        $store_id=$request->id;
+        $store_id = $request->id;
         if (DB::table('stores')->where('id', $store_id)->update([
             'header_pic' => image_store($pic)
         ])) {
@@ -126,9 +126,9 @@ class AdminController extends Controller
             return \response()->json($validator->errors(), 400);
         }
         $pic = $request->profile_pic;
-        $store_id= $request->id;
+        $store_id = $request->id;
         if (DB::table('stores')->where('id', $store_id)->update([
-            'profile_pic' =>image_store( $pic)
+            'profile_pic' => image_store($pic)
         ])) {
             return \response('edit profilePicture success', 200);
         } else return \response('something is wrong', 400);
@@ -148,20 +148,20 @@ class AdminController extends Controller
 
     public function searchStore(Request $request)
     {
-//        $validator = Validator::make($request->all(), [
-//            'name' => 'string|max:255',
-//            'address' => 'string|max:255',
-//            'cat_id' => 'integer',
-//            'phone' => 'numeric:11',
-//            'email' => 'email',
-//            'profile_id' => 'integer',
-//            'store_id' => 'integer',
-//
-//        ]);
-//
-//        if ($validator->fails()) {
-//            return \response()->json($validator->errors(), 400);
-//        }
+        $validator = Validator::make($request->all(), [
+            'name' => 'string|max:255',
+            'address' => 'string|max:255',
+            'cat_id' => 'integer',
+            'phone' => 'numeric:11',
+            'email' => 'email',
+            'profile_id' => 'integer',
+            'store_id' => 'integer',
+
+        ]);
+
+        if ($validator->fails()) {
+            return \response()->json($validator->errors(), 400);
+        }
         $store_id = $request->id;
         $name = $request->name;
         $cat_id = $request->cat_id;
@@ -252,13 +252,15 @@ class AdminController extends Controller
         $product->name = $request->name;
         $product->price = $request->price;
         $product->cat_id = $request->cat_id;
+        $product->color = $request->color;
+        $product->size = $request->size;
         $store_id = $request->store_id;
         $store_id1 = DB::table('stores')->where('id', $store_id)->get();
         if ($store_id1) {
             $product->store_id = $store_id;
             $product->caption = $request->caption;
             $product->pic = image_store($request->pic);
-            $product->tumbnail_pic=image_thumbnail($request->pic);
+            $product->tumbnail_pic = image_thumbnail($request->pic);
             if ($product->save()) {
                 return response()->json([
                     'message' => 'the product created'
@@ -282,6 +284,8 @@ class AdminController extends Controller
                 'cat_id' => $request->cat_id,
                 'price' => $request->price,
                 'caption' => $request->caption,
+                'color' => $request->color,
+                'size' => $request->size,
 
             ])) {
             return \response()->json([
@@ -292,21 +296,23 @@ class AdminController extends Controller
             "message" => "something wrong"
         ], 400);
     }
+
     public function editProductPic(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'pic' => 'required|image',
-            'id' => 'required|integer',
+            'id' => 'required',
         ]);
 
         if ($validator->fails()) {
             return \response()->json($validator->errors(), 400);
         }
         $product_id = $request->id;
-        if (DB::table('products')->where('id',$product_id)
+        $pic = $request->pic;
+        if (DB::table('products')->where('id', $product_id)
             ->update([
-                'pic' =>image_store($request->pic),
-                'tumbnail_pic' =>image_thumbnail($request->pic),
+                'tumbnail_pic' => image_thumbnail($pic),
+                'pic' => image_store($pic),
 
             ])) {
             return \response()->json([
@@ -335,8 +341,9 @@ class AdminController extends Controller
 
     public function searchProduct(Request $request)
     {
-
         $price = $request->price;
+        $color = $request->color;
+        $size = $request->size;
         $name = $request->name;
         $store_id = $request->store_id;
         $cat_id = $request->cat_id;
@@ -359,11 +366,15 @@ class AdminController extends Controller
             })->when($cat_name, function ($query, $cat_name) {
                 return $query->where('categories.name', 'like', '%' . $cat_name . '%');
             })->when($min, function ($query, $min) {
-                return $query->where('products.price', '>', $min);
+                return $query->where('products.price', '>=', $min);
             })->when($max, function ($query, $max) {
-                return $query->where('products.price', '<', $max);
+                return $query->where('products.price', '<=', $max);
             })->when($cat_id, function ($query, $cat_id) {
                 return $query->where('products.cat_id', $cat_id);
+            })->when($color, function ($query, $color) {
+                return $query->where('products.color', $color);
+            })->when($size, function ($query, $size) {
+                return $query->where('products.size', $size);
             })->get();
         return \response()->json($products, 200);
     }

@@ -19,7 +19,7 @@ if (!function_exists('image_store')) {
 
     function image_thumbnail($image)
     {
-        $image_name = time() . '.' . $image->getClientOriginalExtension();
+        $image_name = rand(111111111, 999999999) . '.' . $image->getClientOriginalExtension();
         $destinationPath = base_path() . '/thumbnail/';
         $resize_image = Image::make($image->getRealPath());
         $resize_image->resize(150, 150, function ($constraint) {

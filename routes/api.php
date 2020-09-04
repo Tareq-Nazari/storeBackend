@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('product')->group(function () {
     Route::post('/search', 'api\UserController@searchProduct');
     Route::get('/all', 'api\ProductController@allProduct');
+    Route::get('/one{id}', 'api\ProductController@oneProduct');
     Route::get('/comments', 'api\UserController@ProductComments');
 
 
@@ -29,8 +30,6 @@ Route::prefix('store')->group(function () {
     Route::post('/search', 'api\UserController@searchStore');
     Route::get('/all', 'api\StoreController@allStore');
     Route::get('/comments', 'api\UserController@StoreComments');
-
-
 
 });
 Route::get('/store{id}', 'api\StoreController@store_detail');//اطلاعات یک مغازه را برمی گرداند (id مغازه باید فرستاده شود)
@@ -50,7 +49,7 @@ Route::middleware([])->group(function () {
     Route::prefix('admin')->group(function () {
         Route::prefix('store')->group(function () {
             Route::post('/create', 'api\AdminController@createStore');
-            Route::get('/all', 'api\AdminController@allStore');
+            Route::get('/all',  'api\AdminController@allStore');
             Route::get('/delete{store_id}', 'api\AdminController@deleteStore');
             Route::post('/edit', 'api\AdminController@editStore');
             Route::post('/edit_profile_pic', 'api\AdminController@editProfilePic');
