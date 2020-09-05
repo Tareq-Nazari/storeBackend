@@ -172,6 +172,15 @@ class UserController extends Controller
         } else return \response('something is wrong', 400);
     }
 
+    public function showProfile()
+    {
+        $user=DB::table('profiles')->join('users','user_id','=','users.id')
+            ->select('profiles.*','users.email as email')
+            ->where('user_id',18)->get();
+        if ($user){
+            return \response()->json($user,200);
+        }else      return \response()->json('cant find this user',400);
+    }
 
 //for basket
     public function addToBasket($product_id)
@@ -356,7 +365,6 @@ class UserController extends Controller
     }
 
 
-
     public function deleteUser($id)
     {
         if (DB::table('users')->where('id', $id)->delete() && DB::table('profiles')->where('user_id', $id)->delete()) {
@@ -439,8 +447,8 @@ class UserController extends Controller
 
     public function productComments($id)
     {
-        $comments = DB::table('product_comment')->join('profiles','profile_id','=','profiles.id')
-            ->select('comment','name','product_comment.id as comment_id')->where('product_id', $id)->get();
+        $comments = DB::table('product_comment')->join('profiles', 'profile_id', '=', 'profiles.id')
+            ->select('comment', 'name', 'product_comment.id as comment_id')->where('product_id', $id)->get();
         if ($comments) {
             return \response()->json($comments, 200);
 
@@ -449,8 +457,8 @@ class UserController extends Controller
 
     public function StoreComments($id)
     {
-        $comments = DB::table('store_comment')->join('profiles','profile_id','=','profiles.id')
-                ->select('comment','name','store_comment.id as comment_id')->where('store_id', $id)->get();
+        $comments = DB::table('store_comment')->join('profiles', 'profile_id', '=', 'profiles.id')
+            ->select('comment', 'name', 'store_comment.id as comment_id')->where('store_id', $id)->get();
         if ($comments) {
             return \response()->json($comments, 200);
 

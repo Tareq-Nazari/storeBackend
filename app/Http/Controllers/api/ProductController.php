@@ -179,7 +179,7 @@ class ProductController extends Controller
     public function delete($product_id)
     {
         $store_id = findStoreId();
-        if ($product = DB::table('products')->where('sore_id', $store_id)
+        if ($product = DB::table('products')->where('store_id', $store_id)
             ->where('id', $product_id)->delete()) {
             $image = DB::table('products')->where('id', $product_id)->value('pic');
             image_delete($image);
