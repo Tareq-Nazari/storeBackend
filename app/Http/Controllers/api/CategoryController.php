@@ -255,7 +255,6 @@ class CategoryController extends Controller
 
     public function deleteCategoryProductFromStore($cat_id)
     {
-
         if ($cat_id) {
             if (DB::table('categories')->where('id', $cat_id)->where('store_id', findStoreId())->delete()) {
                 return response()->json([
