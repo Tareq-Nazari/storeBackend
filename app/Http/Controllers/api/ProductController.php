@@ -30,7 +30,9 @@ class ProductController extends Controller
     public function allProductOfStore() //تمام محصولات یک مغازه بخصوص
     {
         $store_id = findStoreId();
-        $all_product = DB::table('products')->where('store_id', $store_id)->get();
+        $all_product = DB::table('products')->join('categories', 'cat_id', '=', 'categories.name')
+            ->select('products.*','categories.name as cat_name')
+            ->where('store_id', $store_id)->get();
         if ($all_product) {
             return response()->json(
                 $all_product
@@ -40,14 +42,15 @@ class ProductController extends Controller
         ], 400);
 
     }
+
     public function oneProduct($id)
     {
 
-        $product=DB::table('products')
-        ->join('categories', 'cat_id', '=', 'categories.id')
-        ->select('products.*', 'categories.name as cat_name')
-            ->where('products.id',$id)->get();
-        if($product){
+        $product = DB::table('products')
+            ->join('categories', 'cat_id', '=', 'categories.id')
+            ->select('products.*', 'categories.name as cat_name')
+            ->where('products.id', $id)->get();
+        if ($product) {
             return \response()->json(
                 $product
                 , 200);
@@ -57,19 +60,18 @@ class ProductController extends Controller
             , 400);
 
 
-
     }
 
     public function create(Request $request)
     {
         $validator = Validator::make($request->all(), [
-                'name' => 'required|string|max:255',
-                'caption' => 'required|string|max:255',
-                'cat_id' => 'required|integer',
-                'price' => 'required|integer',
-                'pic' => 'required|image',
-                'size' => 'required|string|max:255',
-                'color' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
+            'caption' => 'required|string|max:255',
+            'cat_id' => 'required|integer',
+            'price' => 'required|integer',
+            'pic' => 'required|image',
+            'size' => 'required|string|max:255',
+            'color' => 'required|string|max:255',
 
         ]);
 
@@ -77,15 +79,15 @@ class ProductController extends Controller
             return \response()->json($validator->errors(), 400);
         }
         $store_id = findStoreId();
-        $cat_id=DB::table('categories')->where('id',$request->cat_id)
-            ->where('store_id',$store_id)->value('id');
+        $cat_id = DB::table('categories')->where('id', $request->cat_id)
+            ->where('store_id', $store_id)->value('id');
         if ($cat_id) {
             $product = new Product();
             $product->name = $request->name;
             $product->caption = $request->caption;
             $product->price = $request->price;
-            $product->tumbnail_pic=image_thumbnail($request->pic);
-            $product->pic =image_store($request->pic);
+            $product->tumbnail_pic = image_thumbnail($request->pic);
+            $product->pic = image_store($request->pic);
             $product->cat_id = $cat_id;
             $product->size = $request->size;
             $product->color = $request->color;
@@ -98,7 +100,7 @@ class ProductController extends Controller
             } else return response()->json([
                 "message" => "something is wrong"
             ], 400);
-        }else return \response()->json(' cant find category with this cat_id ',400);
+        } else return \response()->json(' cant find category with this cat_id ', 400);
 
     }
 
@@ -106,7 +108,7 @@ class ProductController extends Controller
     {
         if ($product = DB::table('products')->find($product_id)) {
             return response()->json(
-                $product , 200);
+                $product, 200);
         } else return response()->json([
             "message" => "the product not find"
         ], 400);
@@ -148,7 +150,7 @@ class ProductController extends Controller
         ], 400);
     }
 
- public function editPic(Request $request)
+    public function editPic(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'pic' => 'required|image',
@@ -160,8 +162,8 @@ class ProductController extends Controller
         $store_id = findStoreId();
         if (DB::table('products')->where('store_id', $store_id)
             ->where('id', $request->id)->update([
-                'pic' =>image_store($request->pic),
-                'tumbnail_pic' =>image_thumbnail($request->pic),
+                'pic' => image_store($request->pic),
+                'tumbnail_pic' => image_thumbnail($request->pic),
 
             ])) {
             return \response()->json([
