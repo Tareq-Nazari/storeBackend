@@ -23,6 +23,7 @@ Route::prefix('product')->group(function () {
     Route::get('/one{id}', 'api\ProductController@oneProduct');
     Route::get('/comments', 'api\UserController@ProductComments');
 });
+Route::get('product/detail/{id}', 'api\ProductController@Detail');
 Route::prefix('store')->group(function () {
     Route::post('/search', 'api\UserController@searchStore');
     Route::get('/all', 'api\StoreController@allStore');
@@ -133,7 +134,7 @@ Route::middleware(['auth:api','scopes:shopOwner'])->group(function () {
             Route::post('/edit', 'api\ProductController@edit');
             Route::post('/edit_pic', 'api\ProductController@editPic');
             Route::get('/delete{id}', 'api\ProductController@delete');
-            Route::get('/detail{id}', 'api\ProductController@Detail');
+            Route::get('/detail/{id}', 'api\ProductController@Detail');
             Route::get('/comments', 'api\ShopOwnerController@productComments');
             Route::get('/delete_Comment{comment_id}', 'api\ShopOwnerController@deleteProductComment');
         });
@@ -151,9 +152,9 @@ Route::middleware(['auth:api','scopes:shopOwner'])->group(function () {
 Route::prefix('users')->group(function () {
     Route::middleware(['auth:api', 'scope:user'])->group(function () {
         Route::prefix('basket')->group(function () {
-            Route::get('/all}', 'api\UserController@basket');
+            Route::post('/all', 'api\UserController@basket');
             Route::post('/add{id}', 'api\UserController@addToBasket');
-            Route::get('/delete{id}', 'api\UserController@deleteFromBasket');
+            Route::post('/delete{id}', 'api\UserController@deleteFromBasket');
             Route::post('/payment', 'api\FactorController@PurchaseInvoice');//نهایی کردن خرید های سبد
 
         });
