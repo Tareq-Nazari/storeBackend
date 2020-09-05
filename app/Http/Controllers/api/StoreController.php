@@ -90,13 +90,17 @@ class StoreController extends Controller
     public function Detail()
     {
 
-        if ($store = DB::table('stores')->find(findStoreId())) {
+        if ($store = DB::table('stores')
+            ->join('store_categories', 'cat_id', '=', 'store_categories.id')
+            ->select('stores.*', 'store_categories.name as cat_name')
+            ->where('stores.id', findStoreId())->get()) {
             return response()->json([
                 $store,
             ], 200);
         } else return response()->json([
             'message' => 'store not exist'
         ], 400);
+
     }
 
     public function store_detail($id)

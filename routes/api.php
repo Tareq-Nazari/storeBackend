@@ -176,7 +176,7 @@ Route::prefix('users')->group(function () {
 
 
 });
-Route::post('/test', 'api\FactorController@test');
+Route::post('/test', 'api\CategoryController@test');
 
 
 

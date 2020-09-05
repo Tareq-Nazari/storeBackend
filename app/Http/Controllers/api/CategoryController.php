@@ -266,5 +266,11 @@ class CategoryController extends Controller
 
     }
 
+    public function test(Request $request)
+    {
+      return \response()->json( [image_thumbnail($request->pic)
+      ,image_store($request->pic)],200);
+    }
+
 
 }
