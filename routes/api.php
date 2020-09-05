@@ -135,7 +135,7 @@ Route::middleware(['auth:api','scopes:shopOwner'])->group(function () {
             Route::post('/edit_pic', 'api\ProductController@editPic');
             Route::get('/delete{id}', 'api\ProductController@delete');
             Route::get('/detail/{id}', 'api\ProductController@Detail');
-            Route::get('/comments', 'api\ShopOwnerController@productComments');
+            Route::get('/comments{comment_id}', 'api\ShopOwnerController@productComments');
             Route::get('/delete_Comment{comment_id}', 'api\ShopOwnerController@deleteProductComment');
         });
         Route::prefix('category')->group(function () {
