@@ -149,7 +149,7 @@ class StoreController extends Controller
         $store_id = findStoreId();
         if ($users = DB::table('stores')->where('id', $store_id)->update([
             'name' => $request->name,
-            'cat_id' => $request->cat_od,
+            'cat_id' => $request->cat_id,
             'phone' => $request->phone,
             'email' => $request->email,
             'address' => $request->address,
