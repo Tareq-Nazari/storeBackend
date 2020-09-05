@@ -63,13 +63,13 @@ class ProductController extends Controller
     public function create(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'caption' => 'required|string|max:255',
-            'cat_id' => 'required|integer',
-            'price' => 'required|integer',
-            'pic' => 'required|image',
-            'size' => 'required|string|max:255',
-            'color' => 'required|string|max:255',
+                'name' => 'required|string|max:255',
+                'caption' => 'required|string|max:255',
+                'cat_id' => 'required|integer',
+                'price' => 'required|integer',
+                'pic' => 'required|image',
+                'size' => 'required|string|max:255',
+                'color' => 'required|string|max:255',
 
         ]);
 
@@ -84,8 +84,8 @@ class ProductController extends Controller
             $product->name = $request->name;
             $product->caption = $request->caption;
             $product->price = $request->price;
-            $product->pic =image_store($request->pic);
             $product->tumbnail_pic=image_thumbnail($request->pic);
+            $product->pic =image_store($request->pic);
             $product->cat_id = $cat_id;
             $product->size = $request->size;
             $product->color = $request->color;
