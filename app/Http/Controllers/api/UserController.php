@@ -439,7 +439,8 @@ class UserController extends Controller
 
     public function productComments($id)
     {
-        $comments = DB::table('product_comment')->where('product_id', $id)->value('comment')->get();
+        $comments = DB::table('product_comment')->join('profiles','profile_id','=','profiles.id')
+            ->select('comment','name','product_comment.id as comment_id')->where('product_id', $id)->get();
         if ($comments) {
             return \response()->json($comments, 200);
 
@@ -448,7 +449,8 @@ class UserController extends Controller
 
     public function StoreComments($id)
     {
-        $comments = DB::table('store_comment')->where('store_id', $id)->value('comment')->get();
+        $comments = DB::table('store_comment')->join('profiles','profile_id','=','profiles.id')
+                ->select('comment','name','store_comment.id as comment_id')->where('store_id', $id)->get();
         if ($comments) {
             return \response()->json($comments, 200);
 

@@ -181,7 +181,8 @@ class ShopOwnerController extends Controller
     //for comment
     public function storeComments()
     {
-        $comments = DB::table('store_comment')->where('store_id', findStoreId())->get();
+        $comments = DB::table('store_comment')->join('profiles','profile_id','=','profiles.id')
+            ->select('store_comment.*','name')->where('store_id', findStoreId())->get();
         if ($comments) {
             return response()->json($comments, 200);
         } else return response()->json('there is no comment', 400);
@@ -192,7 +193,8 @@ class ShopOwnerController extends Controller
         $comments = DB::table('product_comment')
             ->join('products', 'product_id', '=', 'products.id')
             ->join('stores', 'products.store_id', '=', 'stores.id')
-            ->select('product_comment.*')
+            ->join('profiles', 'profile_id', '=', 'profiles.id')
+            ->select('product_comment.*','profiles.name as name')
             ->where('products.id', $product_id)->where('stores.id', findStoreId())->get();
         if ($comments) {
             return response()->json($comments, 200);
