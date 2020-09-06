@@ -20,10 +20,11 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('product')->group(function () {
     Route::post('/search', 'api\UserController@searchProduct');
     Route::get('/all', 'api\ProductController@allProduct');
-    Route::get('/one{id}', 'api\ProductController@oneProduct');
+    //Route::get('/one{id}', 'api\ProductController@oneProduct');
+    Route::get('/detail/{id}', 'api\ProductController@Detail');
     Route::get('/comments', 'api\UserController@ProductComments');
 });
-//Route::get('product/detail/{id}', 'api\ProductController@Detail');
+
 Route::prefix('store')->group(function () {
     Route::post('/search', 'api\UserController@searchStore');
     Route::get('/all', 'api\StoreController@allStore');
@@ -141,7 +142,7 @@ Route::middleware(['auth:api', 'scopes:shopOwner'])->group(function () {
         Route::prefix('category')->group(function () {
             Route::get('/all', 'api\CategoryController@productOfStore');// دسته بندی محصولات یک مغازه را برمی گرداند
             Route::post('/add', 'api\CategoryController@addCategoryProductToStore');
-            Route::get('/delete', 'api\CategoryController@deleteCategoryProductFromStore');
+            Route::get('/delete{id}', 'api\CategoryController@deleteCategoryProductFromStore');
             Route::post('/search', 'api\CategoryController@searchProductOneStore');
 
         });
@@ -150,10 +151,10 @@ Route::middleware(['auth:api', 'scopes:shopOwner'])->group(function () {
 });
 
 Route::prefix('users')->group(function () {
-    Route::middleware(['auth:api', 'scope:user'])->group(function () {
+    Route::middleware(['auth:api','scopes:user'])->group(function () {
         Route::prefix('basket')->group(function () {
             Route::post('/all', 'api\UserController@basket');
-            Route::post('/add{id}', 'api\UserController@addToBasket');
+            Route::post('/add/{id}', 'api\UserController@addToBasket');
             Route::post('/delete{id}', 'api\UserController@deleteFromBasket');
             Route::post('/payment', 'api\FactorController@PurchaseInvoice');//نهایی کردن خرید های سبد
 

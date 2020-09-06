@@ -193,7 +193,7 @@ class ShopOwnerController extends Controller
         $comments = DB::table('product_comment')
             ->join('products', 'product_id', '=', 'products.id')
             ->join('stores', 'products.store_id', '=', 'stores.id')
-            ->join('profiles', 'profile_id', '=', 'profiles.id')
+            ->join('profiles', 'stores.profile_id', '=', 'profiles.id')
             ->select('product_comment.*','profiles.name as name')
             ->where('products.id', $product_id)->where('stores.id', findStoreId())->get();
         if ($comments) {
@@ -213,7 +213,7 @@ class ShopOwnerController extends Controller
 
     public function deleteProductComment($comment_id)
     {
-        $comment = DB::table('product_comment')
+      $comment = DB::table('product_comment')
             ->join('products', 'product_id', '=', 'products.id')
             ->join('stores', 'products.store_id', '=', 'stores.id')
             ->where('stores.id', findStoreId())
