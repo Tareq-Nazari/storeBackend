@@ -31,7 +31,7 @@ Route::prefix('store')->group(function () {
     Route::get('/comments', 'api\UserController@StoreComments');
 });
 //Route::get('/store{id}', 'api\StoreController@store_detail');//اطلاعات یک مغازه را برمی گرداند (id مغازه باید فرستاده شود)
-Route::get('/product_store{id}', 'api\StoreController@productOfStore');//محصولات یک مغازه را بر می گرداند
+Route::get('/product_store/{id}', 'api\StoreController@productOfStore');//محصولات یک مغازه را بر می گرداند
 Route::post('/edit_profile', 'api\UserController@editProfile')->middleware('auth:api');
 Route::get('/logout', 'api\UserController@logout')->middleware('auth:api');
 Route::post('/login', 'api\UserController@login');

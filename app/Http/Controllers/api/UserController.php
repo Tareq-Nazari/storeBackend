@@ -125,9 +125,10 @@ class UserController extends Controller
     public function editProfile(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'string|max:255',
-            'address' => 'string|max:255',
-            'phone' => 'numeric:11',
+            'name' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+            'phone' => 'required|numeric:11',
+            'email' => 'required|email',
         ]);
 
         if ($validator->fails()) {
@@ -135,23 +136,27 @@ class UserController extends Controller
         }
         $user_id = Auth::user()->id;
         if ($user_id) {
-            DB::table('profiles')->where('user_id', $user_id)->update([
-                'name' => $request->name,
-                'phone' => $request->phone,
-                'address' => $request->address,
 
-            ]);
-            DB::table('users')->where('id', $user_id)->update([
-                'name' => $request->name,
-                'email' => $request->email,
-            ]);
-            return \response()->json([
-                "message" => "edit store success"
-            ], 200);
+            if (DB::table('profiles')->where('user_id', $user_id)->update([
+                    'name' => $request->name,
+                    'phone' => $request->phone,
+                    'address' => $request->address,
 
+                ]) &&
+                DB::table('users')->where('id', $user_id)->update([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                ])) {
+                return \response()->json([
+                    "message" => "edit profile success"
+                ], 200);
+            } else return \response()->json([
+                "message" => "something wrong"
+            ], 400);
         } else return \response()->json([
-            "message" => "something wrong"
+            "message" => "cant find this user"
         ], 400);
+
 
     }
 
@@ -176,7 +181,7 @@ class UserController extends Controller
     {
         $user=DB::table('profiles')->join('users','user_id','=','users.id')
             ->select('profiles.*','users.email as email')
-            ->where('user_id',18)->get();
+            ->where('user_id',Auth::user()->id)->get();
         if ($user){
             return \response()->json($user,200);
         }else      return \response()->json('cant find this user',400);
@@ -253,8 +258,8 @@ class UserController extends Controller
             ->when($name, function ($query, $name) {
                 return $query->where('name', 'like', '%' . $name . '%');
             })->when($category, function ($query, $category) {
-                return $query->where('cat_id', 'like', '%' . $category . '%');
-            });
+                return $query->where('cat_id', $category );
+            })->get();
         return \response()->json($stores, 200);
     }
 
@@ -327,10 +332,8 @@ class UserController extends Controller
                 return $query->where('store_id', $store_id);
             })->when($product_id, function ($query, $product_id) {
                 return $query->where('id', $product_id);
-            })
-            ->when($name, function ($query, $name) {
-                return $query->where('name', 'like', '%' . $name . '%')
-                    ->orWhere('caption', 'like', '%' . $name . '%');
+            })->when($name, function ($query, $name) {
+                return $query->where('name', 'like', '%' . $name . '%');
             })->when($price, function ($query, $price) {
                 return $query->where('price', $price);
             })->when($product_id, function ($query, $product_id) {

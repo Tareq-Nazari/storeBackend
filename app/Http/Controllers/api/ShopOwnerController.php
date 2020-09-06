@@ -213,17 +213,17 @@ class ShopOwnerController extends Controller
 
     public function deleteProductComment($comment_id)
     {
-//        $comment = DB::table('product_comment')
-//            ->join('products', 'product_id', '=', 'products.id')
-//            ->join('stores', 'products.store_id', '=', 'stores.id')
-//            ->where('stores.id', findStoreId())
-//            ->where('product_comment.id', $comment_id)->select('product_comment.id')->get();
-//        if ($comment) {
+        $comment = DB::table('product_comment')
+            ->join('products', 'product_id', '=', 'products.id')
+            ->join('stores', 'products.store_id', '=', 'stores.id')
+            ->where('stores.id', findStoreId())
+            ->where('product_comment.id', $comment_id)->select('product_comment.id')->get();
+        if ($comment) {
             if (DB::table('product_comment')->where('id', $comment_id)->delete()) {
                 return response()->json('deleted successful', 200);
             }
-            //else return response()->json('cant find this comment', 400);
-//        } else return response()->json('cant find this comment', 400);
+           else return response()->json('cant find this comment', 400);
+        } else return response()->json('cant find this comment', 400);
 
 
     }
