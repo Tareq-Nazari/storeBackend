@@ -169,7 +169,7 @@ Route::prefix('users')->group(function () {
 
         });
 
-        Route::get('/factor', 'api\UserController@searchFactor');
+        Route::post('/factor', 'api\UserController@searchFactor');
     });
     Route::prefix('profile')->group(function () {
         Route::middleware(['auth:api'])->group(function () {

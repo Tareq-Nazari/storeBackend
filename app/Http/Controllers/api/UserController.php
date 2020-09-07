@@ -290,7 +290,7 @@ class UserController extends Controller
         $price = $request->price;
         $name = $request->name;
         $product_name = $request->product_name;
-        $profile_id = DB::table('profiles')->where('user_id', Auth::user()->id);
+        $profile_id = DB::table('profiles')->where('user_id', Auth::user()->id)->value('id');
         $payment_receipt = $request->payment_receipt;
         $store_id = $request->store_id;
         $created_at = $request->created_at;
