@@ -169,10 +169,10 @@ Route::prefix('users')->group(function () {
 
         });
 
-        Route::get('/factor', 'api\UserController@searchFactor');
+        Route::post('/factor', 'api\UserController@searchFactor');
     });
     Route::prefix('profile')->group(function () {
-        Route::middleware([])->group(function () {
+        Route::middleware(['auth:api'])->group(function () {
             Route::get('/show', 'api\UserController@showProfile');
             Route::post('/edit', 'api\UserController@editProfile');
             Route::post('/edit_picture', 'api\UserController@editProfilePicture');

@@ -295,7 +295,9 @@ class UserController extends Controller
         $store_id = $request->store_id;
         $created_at = $request->created_at;
         $product_id = $request->product_id;
-        $factors = DB::table('factor')->where('profile_id', $profile_id)
+        $factors = DB::table('factor')->join('products','product_id','=','products.id')
+            ->select('factors.*','products.tumbnail_pic as thumbnail_pic')
+            ->where('profile_id', $profile_id)
             ->when($name, function ($query, $name) {
                 return $query->where('name', 'like', '%' . $name . '%');
             })->when($store_name, function ($query, $store_name) {
