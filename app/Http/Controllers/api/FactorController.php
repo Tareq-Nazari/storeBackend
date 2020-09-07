@@ -33,32 +33,61 @@ class FactorController extends Controller
 //        if ($validator->fails()) {
 //            return \response()->json($validator->errors(), 400);
 //        }
-        $factor = new Factor();
-        $factor->payment_receipt = rand(111111, 999999);
-        $factor->profile_id = $request->profile_id;
-        $factor->name = $request->name;
-        $factor->price = $request->price;
-        $factor->product_id = $request->product_id;
-        $factor->product_name = $request->product_name;
-        $factor->store_id = $request->store_id;
-        $factor->count = $request->count;
-        $factor->store_name = $request->store_name;
-        $factor->created_at = time();
-        if ($factor->save()) {
+//
+//        for ($i = 0; $i < 10; $i++) {
+//            $factor = new Factor();
+//            $factor->payment_receipt = rand(111111, 999999);
+//            $factor->profile_id = $request->profile_id;
+//            $factor->name = $request->name;
+//            $factor->price = $request->price;
+//            $factor->product_id = $request->product_id;
+//            $factor->product_name = $request->product_name;
+//            $factor->store_id = $request->store_id;
+//            $factor->store_name = $request->store_name;
+//            $factor->created_at = time();
+//            $factor->save();
+//        }
+//      {
+        $factors = $request->all();
+        DB::beginTransaction();
+        try {
+            foreach ($factors as $fact) {
 
-            return response()->json([
-                "message" => "factor created"
-            ], 200);
-        } else return \response()->json([
-            "message" => "something is wrong"
-        ], 400);
+                $factor = new Factor();
+                $factor->payment_receipt = rand(111111, 999999);
+                $factor->profile_id = $fact['profile_id'];
+                $factor->name = $fact['name'];
+                $factor->price = $fact['price'];
+                $factor->product_id = $fact['product_id'];
+                $factor->product_name = $fact['product_name'];
+                $factor->store_id = $fact['store_id'];
+                $factor->store_name = $fact['store_name'];
+                $factor->created_at = time();
+                $factor->save();
 
+            }
+            DB::table('basket')->where('profile_id', $fact['profile_id'])->delete();
+            DB::commit();
+            return response()->json('payment is successful'
+
+                , 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json('something is wrong'
+
+                , 400);
+        }
+
+//        } else return \response()->json([
+//            "message" => "something is wrong"
+//        ], 400);
+//
 
     }
 
     public function test(Request $request)
     {
-      $image=image_thumbnail($request->pic);
+        $image = image_thumbnail($request->pic);
         return \response()->json($image, 200);
 
 

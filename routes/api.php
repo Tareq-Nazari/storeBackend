@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('product')->group(function () {
     Route::post('/search', 'api\UserController@searchProduct');
     Route::get('/all', 'api\ProductController@allProduct');
-    //Route::get('/one{id}', 'api\ProductController@oneProduct');
+    Route::get('/one{id}', 'api\ProductController@oneProduct');
     Route::get('/detail/{id}', 'api\ProductController@Detail');
     Route::get('/comments', 'api\UserController@ProductComments');
 });

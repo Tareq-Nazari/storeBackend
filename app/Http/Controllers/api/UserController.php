@@ -231,7 +231,11 @@ class UserController extends Controller
     public function basket()
     {
         $profile_id = DB::table('profiles')->where('user_id', Auth::user()->id)->value('id');
-        if ($basket = DB::table('products')->join('basket','products.id','=','basket.product_id')->select('basket.*','products.tumbnail_pic as thumbnail','products.caption as caption')->where('basket.profile_id', $profile_id)->get()) {
+        if ($basket = DB::table('products')->join('basket','products.id','=','basket.product_id')
+           ->join('stores','products.store_id','=','stores.id')
+            ->select('basket.*','products.tumbnail_pic as thumbnail','products.caption as caption','stores.name as store_name')
+            ->where('basket.profile_id', $profile_id)
+            ->get()) {
             return \response()->json(
                 $basket
                 , 200);
