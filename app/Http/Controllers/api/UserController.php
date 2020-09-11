@@ -32,7 +32,7 @@ class UserController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return \response()->json($validator->errors(), 400);
+            return \response()->json(['error' => $validator->errors()], 400);
         }
         $user = new User();
         $profile = new Profile();
@@ -290,7 +290,8 @@ class UserController extends Controller
         $price = $request->price;
         $name = $request->name;
         $product_name = $request->product_name;
-        $$profile_id = DB::table('profile')->where('user_id', Auth::user()->id)->value('id');
+
+        $profile_id = DB::table('profiles')->where('user_id', Auth::user()->id)->value('id');
         $payment_receipt = $request->payment_receipt;
         $store_id = $request->store_id;
         $created_at = $request->created_at;
@@ -426,7 +427,10 @@ class UserController extends Controller
     function addProductComment(Request $request)
     {
         $text = $request->text;
-        $profile_id = DB::table('profile')->where('user_id', Auth::user()->id)->value('id');
+
+
+        $profile_id = DB::table('profiles')->where('user_id', Auth::user()->id)->value('id');
+
         $product_id = $request->product_id;
         $comment = new ProductComment();
         $comment->comment = $text;

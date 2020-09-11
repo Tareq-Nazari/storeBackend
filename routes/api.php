@@ -43,7 +43,7 @@ Route::prefix('category')->group(function () {
     Route::post('/searchStore', 'api\CategoryController@searchCategoryStore');//سرچ دسته بندی مغازه
     Route::post('/searchProduct', 'api\CategoryController@searchProductStore');//سرچ دسته بندی محصولات
 });
-Route::middleware([])->group(function () {
+Route::middleware(['auth:api' ,'scopes:admin'])->group(function () {
     Route::prefix('admin')->group(function () {
         Route::prefix('store')->group(function () {
             Route::post('/create', 'api\AdminController@createStore');
@@ -142,7 +142,8 @@ Route::middleware(['auth:api', 'scopes:shopOwner'])->group(function () {
     });
 });
 Route::prefix('users')->group(function () {
-    Route::middleware(['auth:api', 'scopes:user'])->group(function () {
+    Route::post('/factor', 'api\UserController@searchFactor')->middleware('auth:api');
+    Route::middleware(['auth:api','scope:user,shopOwner'])->group(function () {
         Route::prefix('basket')->group(function () {
             Route::post('/all', 'api\UserController@basket');
             Route::post('/add/{id}', 'api\UserController@addToBasket');
@@ -156,7 +157,9 @@ Route::prefix('users')->group(function () {
             Route::post('/add_comment', 'api\UserController@addStoreComment');
             Route::post('/create', 'api\StoreController@create');
         });
-        Route::post('/factor', 'api\UserController@searchFactor');
+
+
+
     });
     Route::prefix('profile')->group(function () {
         Route::middleware(['auth:api'])->group(function () {

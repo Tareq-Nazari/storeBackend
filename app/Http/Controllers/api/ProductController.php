@@ -30,9 +30,9 @@ class ProductController extends Controller
     public function allProductOfStore() //تمام محصولات یک مغازه بخصوص
     {
         $store_id = findStoreId();
-        $all_product = DB::table('products')->join('categories', 'cat_id', '=', 'categories.name')
+        $all_product = DB::table('products')->join('categories', 'cat_id', '=', 'categories.id')
             ->select('products.*','categories.name as cat_name')
-            ->where('store_id', $store_id)->get();
+            ->where('products.store_id', $store_id)->get();
         if ($all_product) {
             return response()->json(
                 $all_product
@@ -122,7 +122,7 @@ class ProductController extends Controller
             'size' => 'required|string|max:255',
             'color' => 'required|string|max:255',
             'cat_id' => 'required|integer',
-            'product_id' => 'required|integer',
+            'id' => 'required|integer',
             'price' => 'required|integer',
 
         ]);
