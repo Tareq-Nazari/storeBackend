@@ -134,7 +134,7 @@ Route::middleware(['auth:api', 'scopes:shopOwner'])->group(function () {
             Route::get('/commentDelete{comment_id}', 'api\ShopOwnerController@deleteProductComment');
         });
         Route::prefix('category')->group(function () {
-            Route::get('/all', 'api\CategoryController@productOfStore');// دسته بندی محصولات یک مغازه را برمی گرداند
+            Route::get('/all', 'api\CategoryController@select_store_cat');// دسته بندی محصولات یک مغازه را برمی گرداند
             Route::post('/add', 'api\CategoryController@addCategoryProductToStore');
             Route::get('/delete{id}', 'api\CategoryController@deleteCategoryProductFromStore');
             Route::post('/search', 'api\CategoryController@searchProductOneStore');

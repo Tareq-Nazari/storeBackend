@@ -30,8 +30,8 @@ class ProductController extends Controller
     public function allProductOfStore() //تمام محصولات یک مغازه بخصوص
     {
         $store_id = findStoreId();
-        $all_product = DB::table('products')->join('categories', 'cat_id', '=', 'categories.id')
-            ->select('products.*','categories.name as cat_name')
+        $all_product = DB::table('products')->join('categories', 'products.cat_id', '=', 'categories.id')
+            ->select('products.*')
             ->where('products.store_id', $store_id)->get();
         if ($all_product) {
             return response()->json(
@@ -47,8 +47,9 @@ class ProductController extends Controller
     {
 
         $product = DB::table('products')
-            ->join('categories', 'cat_id', '=', 'categories.id')
-            ->select('products.*', 'categories.name as cat_name')
+            ->join('categories', 'products.cat_id', '=', 'categories.id')
+            ->join('store_categories','categories.cat_id','=','store_categories.id')
+            ->select('products.*', 'store_categories.name as cat_name')
             ->where('products.id', $id)->get();
         if ($product) {
             return \response()->json(
@@ -79,7 +80,7 @@ class ProductController extends Controller
             return \response()->json($validator->errors(), 400);
         }
         $store_id = findStoreId();
-        $cat_id = DB::table('categories')->where('id', $request->cat_id)
+        $cat_id = DB::table('categories')->where('cat_id', $request->cat_id)
             ->where('store_id', $store_id)->value('id');
         if ($cat_id) {
             $product = new Product();

@@ -34,6 +34,7 @@ class UserController extends Controller
         if ($validator->fails()) {
             return \response()->json(['error' => $validator->errors()], 400);
         }
+
         $user = new User();
         $profile = new Profile();
         $profile->name = $request->name;

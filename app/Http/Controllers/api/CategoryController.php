@@ -30,7 +30,9 @@ class CategoryController extends Controller
 
     public function allProduct()//دسته بندی محصولا
     {
-        $categories = DB::table('categories')->get();
+        $categories = DB::table('categories')
+
+            ->get();
         if ($categories) {
             return response()->json(
                 $categories
@@ -41,18 +43,18 @@ class CategoryController extends Controller
 
     }
 
-    public function productOfStore()//دسته بندی محصولات یک مغازه
-    {
-        $categories = DB::table('categories')->where('store_id', findStoreId())->get();
-        if ($categories) {
-            return response()->json(
-                $categories
-            , 200);
-        } else return response()->json([
-            'message' => 'there is no category'
-        ], 400);
-
-    }
+//    public function productOfStore()//دسته بندی محصولات یک مغازه
+//    {
+//        $categories = DB::table('categories')->where('store_id', findStoreId())->get();
+//        if ($categories) {
+//            return response()->json(
+//                $categories
+//                , 200);
+//        } else return response()->json([
+//            'message' => 'there is no category'
+//        ], 400);
+//
+//    }
 
     //for admin کتگوری مغازه
     public function addStoreCategory(Request $request)
@@ -69,7 +71,7 @@ class CategoryController extends Controller
         if ($category->save()) {
             return response()->json(
                 $category,
-             200);
+                200);
         } else return response()->json(['message' => 'something wrong'], 400);
     }
 
@@ -106,7 +108,7 @@ class CategoryController extends Controller
                     $category
                     , 200);
             } else return response()->json(['message' => 'something wrong'], 400);
-        }else return \response()->json('there is no store with this id',400);
+        } else return \response()->json('there is no store with this id', 400);
 
     }
 
@@ -140,7 +142,7 @@ class CategoryController extends Controller
             return response()->json(
                 $category,
 
-            200);
+                200);
         } else return response()->json(['message' => 'something wrong'], 400);
 
 
@@ -234,22 +236,21 @@ class CategoryController extends Controller
     public function addCategoryProductToStore(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'string|max:255',
             'id' => 'integer',
-
-
         ]);
         if ($validator->fails()) {
             return \response()->json($validator->errors(), 400);
         }
-        $cat = new Product_categories();
-        $cat->name = $request->name;
-        $cat->store_id = findStoreId();
-        if ($cat->save()) {
-            return response()->json(
-                $cat,
-         200);
-        } else return response()->json(['message' => 'something wrong'], 400);
+        if (DB::table('store_categories')->where('id',$request->id)->get()) {
+            $cat = new Product_categories();
+            $cat->cat_id = $request->id;
+            $cat->store_id = findStoreId();
+            if ($cat->save()) {
+                return response()->json(
+                    $cat,
+                    200);
+            } else return response()->json(['message' => 'something wrong'], 400);
+        }else return response()->json('cant find this cat_id', 400);
 
     }
 
@@ -264,11 +265,22 @@ class CategoryController extends Controller
         } else return response()->json(['message' => 'there is no id'], 400);
 
     }
+//کتگوری یک مغازه را بر می گرداند
+    public function select_store_cat()
+    {
+        $categories = DB::table('store_categories')->join('categories', 'store_categories.id', '=', 'categories.cat_id')
+            ->join('stores', 'categories.store_id', '=', 'stores.id')
+            ->select('store_categories.*')->get();
+        if ($categories) {
+            return \response()->json($categories, 200);
+        } else return response()->json('there is no category', 400);
+
+    }
 
     public function test(Request $request)
     {
-      return \response()->json( [image_thumbnail($request->pic)
-      ,image_store($request->pic)],200);
+        return \response()->json([image_thumbnail($request->pic)
+            , image_store($request->pic)], 200);
     }
 
 

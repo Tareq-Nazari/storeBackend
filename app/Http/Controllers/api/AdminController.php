@@ -234,8 +234,9 @@ class AdminController extends Controller
     public function allProduct()
     {
         $products = DB::table('products')
-            ->join('categories', 'cat_id', '=', 'categories.id')
-            ->select('products.*', 'categories.name as cat_name')
+            ->join('categories', 'products.cat_id', '=', 'categories.id')
+            ->join('store_categories','categories.cat_id','=','store_categories.id')
+            ->select('products.*', 'store_categories.name as cat_name')
             ->get();
         if ($products) {
             return response()->json($products, 200);
