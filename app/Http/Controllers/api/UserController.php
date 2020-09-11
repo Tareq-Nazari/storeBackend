@@ -32,7 +32,7 @@ class UserController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return \response()->json($validator->errors(), 400);
+            return \response()->json(['error' => $validator->errors()], 400);
         }
         $user = new User();
         $profile = new Profile();
@@ -296,7 +296,7 @@ class UserController extends Controller
         $created_at = $request->created_at;
         $product_id = $request->product_id;
         $factors = DB::table('factor')->join('products','product_id','=','products.id')
-            ->select('factors.*','products.tumbnail_pic as thumbnail_pic')
+            ->select('factor.*','products.tumbnail_pic as thumbnail_pic')
             ->where('profile_id', $profile_id)
             ->when($name, function ($query, $name) {
                 return $query->where('name', 'like', '%' . $name . '%');
@@ -426,7 +426,7 @@ class UserController extends Controller
     function addProductComment(Request $request)
     {
         $text = $request->text;
-        $profile_id = DB::table('profile')->where('user_id', Auth::user()->id);
+        $profile_id = DB::table('profiles')->where('user_id', Auth::user()->id)->value('id');
         $product_id = $request->product_id;
         $comment = new ProductComment();
         $comment->comment = $text;
