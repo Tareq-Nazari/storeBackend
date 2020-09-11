@@ -22,7 +22,7 @@ Route::prefix('product')->group(function () {
     Route::get('/all', 'api\ProductController@allProduct');
     Route::get('/one{id}', 'api\ProductController@oneProduct');
     Route::get('/detail/{id}', 'api\ProductController@Detail');
-    Route::get('/comments', 'api\UserController@ProductComments');
+    Route::get('/comments/{id}', 'api\UserController@ProductComments');
 });
 
 Route::prefix('store')->group(function () {
@@ -60,7 +60,6 @@ Route::middleware([])->group(function () {
                 Route::post('/add', 'api\CategoryController@addStoreCategory');
                 Route::get('/delete{cat_id}', 'api\CategoryController@deleteStoreCategory');
                 Route::post('/search', 'api\CategoryController@searchCategoryStore');
-
             });
             Route::prefix('product')->group(function () {
                 Route::get('/all', 'api\CategoryController@allProduct');// دسته بندی محصولات یک مغازه را برمی گرداند
@@ -84,8 +83,6 @@ Route::middleware([])->group(function () {
             Route::get('/delete{id}', 'api\UserController@deleteUser');
             Route::post('/search', 'api\UserController@searchUser');
             Route::post('/add', 'api\UserController@register');
-
-
         });
         Route::prefix('factors')->group(function () {
             Route::get('/all', 'api\FactorController@all');
@@ -96,14 +93,12 @@ Route::middleware([])->group(function () {
                 Route::get('/all', 'api\AdminController@storeComments');
                 Route::post('/search', 'api\AdminController@searchStoreComment');
                 Route::get('/delete{id}', 'api\AdminController@deleteStoreComment');
-
             });
             Route::prefix('product_comment')->group(function () {
                 Route::get('/all', 'api\AdminController@productComments');
                 Route::post('/search', 'api\AdminController@searchProductComment');
                 Route::get('/delete{id}', 'api\AdminController@deleteProductComment');
             });
-
         });
         Route::get('/roles', 'api\AdminController@roles');
     });
@@ -114,7 +109,6 @@ Route::middleware(['auth:api', 'scopes:shopOwner'])->group(function () {
         Route::prefix('profile')->group(function () { //پروفایل صاحب مغازه
             Route::post('/edit', 'api\UserController@editProfile');
             Route::post('/edit_picture', 'api\UserController@editProfilePicture');
-
         });
         Route::post('/searchFactor', 'api\ShopOwnerController@searchFactor');
         Route::prefix('store')->group(function () {
@@ -144,31 +138,24 @@ Route::middleware(['auth:api', 'scopes:shopOwner'])->group(function () {
             Route::post('/add', 'api\CategoryController@addCategoryProductToStore');
             Route::get('/delete{id}', 'api\CategoryController@deleteCategoryProductFromStore');
             Route::post('/search', 'api\CategoryController@searchProductOneStore');
-
         });
-
     });
 });
-
 Route::prefix('users')->group(function () {
-    Route::middleware(['auth:api','scopes:user'])->group(function () {
+    Route::middleware(['auth:api', 'scopes:user'])->group(function () {
         Route::prefix('basket')->group(function () {
             Route::post('/all', 'api\UserController@basket');
             Route::post('/add/{id}', 'api\UserController@addToBasket');
             Route::post('/delete{id}', 'api\UserController@deleteFromBasket');
             Route::post('/payment', 'api\FactorController@PurchaseInvoice');//نهایی کردن خرید های سبد
-
         });
         Route::prefix('product')->group(function () {
             Route::post('/add_comment', 'api\UserController@addProductComment');
-
         });
         Route::prefix('store')->group(function () {
             Route::post('/add_comment', 'api\UserController@addStoreComment');
             Route::post('/create', 'api\StoreController@create');
-
         });
-
         Route::post('/factor', 'api\UserController@searchFactor');
     });
     Route::prefix('profile')->group(function () {
@@ -176,7 +163,6 @@ Route::prefix('users')->group(function () {
             Route::get('/show', 'api\UserController@showProfile');
             Route::post('/edit', 'api\UserController@editProfile');
             Route::post('/edit_picture', 'api\UserController@editProfilePicture');
-
         });
     });
 

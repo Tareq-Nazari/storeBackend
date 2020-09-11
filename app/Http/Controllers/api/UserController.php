@@ -290,13 +290,13 @@ class UserController extends Controller
         $price = $request->price;
         $name = $request->name;
         $product_name = $request->product_name;
-        $profile_id = DB::table('profiles')->where('user_id', Auth::user()->id);
+        $$profile_id = DB::table('profile')->where('user_id', Auth::user()->id)->value('id');
         $payment_receipt = $request->payment_receipt;
         $store_id = $request->store_id;
         $created_at = $request->created_at;
         $product_id = $request->product_id;
         $factors = DB::table('factor')->join('products','product_id','=','products.id')
-            ->select('factors.*','products.tumbnail_pic as thumbnail_pic')
+            ->select('factor.*','products.tumbnail_pic as thumbnail_pic')
             ->where('profile_id', $profile_id)
             ->when($name, function ($query, $name) {
                 return $query->where('name', 'like', '%' . $name . '%');
@@ -426,7 +426,7 @@ class UserController extends Controller
     function addProductComment(Request $request)
     {
         $text = $request->text;
-        $profile_id = DB::table('profile')->where('user_id', Auth::user()->id);
+        $profile_id = DB::table('profile')->where('user_id', Auth::user()->id)->value('id');
         $product_id = $request->product_id;
         $comment = new ProductComment();
         $comment->comment = $text;
@@ -442,7 +442,7 @@ class UserController extends Controller
     function addStoreComment(Request $request)
     {
         $text = $request->text;
-        $profile_id = DB::table('profile')->where('user_id', Auth::user()->id);
+        $profile_id = DB::table('profile')->where('user_id', Auth::user()->id)->value('id');
         $store_id = $request->store_id;
         $comment = new StoreComment();
         $comment->comment = $text;
