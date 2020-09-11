@@ -152,7 +152,7 @@ Route::middleware(['auth:api', 'scopes:shopOwner'])->group(function () {
 
 Route::prefix('users')->group(function () {
     Route::post('/factor', 'api\UserController@searchFactor')->middleware('auth:api');
-    Route::middleware(['auth:api','scope:user,shopOwner'])->group(function () {
+    Route::middleware(['auth:api','scope:user,shopOwner,admin'])->group(function () {
         Route::prefix('basket')->group(function () {
             Route::post('/all', 'api\UserController@basket');
             Route::post('/add/{id}', 'api\UserController@addToBasket');
