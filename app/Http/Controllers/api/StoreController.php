@@ -119,8 +119,10 @@ class StoreController extends Controller
 
     public function productOfStore($id)
     {
-        if ($products = DB::table('products')->join('categories', 'cat_id', '=', 'categories.id')
-            ->select('products.id', 'products.name', 'price', 'pic', 'caption', 'categories.name as cat_name')
+        if ($products = DB::table('products')
+            ->join('categories', 'products.cat_id', '=', 'categories.id')
+            ->join('store_categories','categories.cat_id','=','store_categories.id')
+            ->select('products.id', 'products.name', 'price', 'pic', 'caption', 'store_categories.name as cat_name')
             ->where('products.store_id', $id)->get()) {
             return response()->json([
                 $products,

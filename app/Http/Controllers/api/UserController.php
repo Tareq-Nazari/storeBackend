@@ -336,16 +336,17 @@ class UserController extends Controller
         $max = $request->max;
         $min = $request->min;
         $products = DB::table('products')
+            ->join('categories','products.cat_id','=','categories.id')
+            ->join('store_categories','categories.cat_id','=','store_categories.id')
+            ->select('products.*','store_categories.name as cat_name')
             ->when($store_id, function ($query, $store_id) {
-                return $query->where('store_id', $store_id);
-            })->when($product_id, function ($query, $product_id) {
-                return $query->where('id', $product_id);
+                return $query->where('products.store_id', $store_id);
             })->when($name, function ($query, $name) {
-                return $query->where('name', 'like', '%' . $name . '%');
+                return $query->where('products.name', 'like', '%' . $name . '%');
             })->when($price, function ($query, $price) {
                 return $query->where('price', $price);
             })->when($product_id, function ($query, $product_id) {
-                return $query->where('id', $product_id);
+                return $query->where('products.id', $product_id);
             })->when($color, function ($query, $color) {
                 return $query->where('color', $color);
             })->when($size, function ($query, $size) {
@@ -355,7 +356,7 @@ class UserController extends Controller
             })->when($max, function ($query, $max) {
                 return $query->where('price', '<=', $max);
             })->when($cat_id, function ($query, $cat_id) {
-                return $query->where('cat_id', $cat_id);
+                return $query->where('products.cat_id', $cat_id);
             })->get();
         return \response()->json($products, 200);
     }

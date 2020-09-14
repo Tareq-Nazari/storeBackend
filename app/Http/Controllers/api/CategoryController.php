@@ -163,14 +163,15 @@ class CategoryController extends Controller
     public function searchCategoryStore(Request $request)
     {
 
-        $id = $request->id;
+        $id = $request->store_id;
         $name = $request->name;
-
-        $categories = DB::table('store_categories')
+        $categories = DB::table('categories')
+            ->join('store_categories','categories.cat_id','=','store_categories.id')
+            ->select('categories.*','store_categories.name as cat_name')
             ->when($name, function ($query, $name) {
                 return $query->where('name', 'like', '%' . $name . '%');
             })->when($id, function ($query, $id) {
-                return $query->where('id', $id);
+                return $query->where('categories.store_id', $id);
             })->get();
         if ($categories) {
             return \response()->json($categories, 200);
