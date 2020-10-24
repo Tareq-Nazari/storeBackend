@@ -180,12 +180,12 @@ class UserController extends Controller
 
     public function showProfile()
     {
-        $user=DB::table('profiles')->join('users','user_id','=','users.id')
-            ->select('profiles.*','users.email as email')
-            ->where('user_id',Auth::user()->id)->get();
-        if ($user){
-            return \response()->json($user,200);
-        }else      return \response()->json('cant find this user',400);
+        $user = DB::table('profiles')->join('users', 'user_id', '=', 'users.id')
+            ->select('profiles.*', 'users.email as email')
+            ->where('user_id', Auth::user()->id)->get();
+        if ($user) {
+            return \response()->json($user, 200);
+        } else      return \response()->json('cant find this user', 400);
     }
 
 //for basket
@@ -232,9 +232,9 @@ class UserController extends Controller
     public function basket()
     {
         $profile_id = DB::table('profiles')->where('user_id', Auth::user()->id)->value('id');
-        if ($basket = DB::table('products')->join('basket','products.id','=','basket.product_id')
-           ->join('stores','products.store_id','=','stores.id')
-            ->select('basket.*','products.tumbnail_pic as thumbnail','products.caption as caption','stores.name as store_name')
+        if ($basket = DB::table('products')->join('basket', 'products.id', '=', 'basket.product_id')
+            ->join('stores', 'products.store_id', '=', 'stores.id')
+            ->select('basket.*', 'products.tumbnail_pic as thumbnail', 'products.caption as caption', 'stores.name as store_name')
             ->where('basket.profile_id', $profile_id)
             ->get()) {
             return \response()->json(
@@ -263,7 +263,7 @@ class UserController extends Controller
             ->when($name, function ($query, $name) {
                 return $query->where('name', 'like', '%' . $name . '%');
             })->when($category, function ($query, $category) {
-                return $query->where('cat_id', $category );
+                return $query->where('cat_id', $category);
             })->get();
         return \response()->json($stores, 200);
     }
@@ -297,8 +297,8 @@ class UserController extends Controller
         $store_id = $request->store_id;
         $created_at = $request->created_at;
         $product_id = $request->product_id;
-        $factors = DB::table('factor')->join('products','product_id','=','products.id')
-            ->select('factor.*','products.tumbnail_pic as thumbnail_pic')
+        $factors = DB::table('factor')->join('products', 'product_id', '=', 'products.id')
+            ->select('factor.*', 'products.tumbnail_pic as thumbnail_pic')
             ->where('profile_id', $profile_id)
             ->when($name, function ($query, $name) {
                 return $query->where('name', 'like', '%' . $name . '%');
@@ -336,9 +336,9 @@ class UserController extends Controller
         $max = $request->max;
         $min = $request->min;
         $products = DB::table('products')
-            ->join('categories','products.cat_id','=','categories.id')
-            ->join('store_categories','categories.cat_id','=','store_categories.id')
-            ->select('products.*','store_categories.name as cat_name')
+            ->join('categories', 'products.cat_id', '=', 'categories.id')
+            ->join('store_categories', 'categories.cat_id', '=', 'store_categories.id')
+            ->select('products.*', 'store_categories.name as cat_name')
             ->when($store_id, function ($query, $store_id) {
                 return $query->where('products.store_id', $store_id);
             })->when($name, function ($query, $name) {
@@ -425,8 +425,7 @@ class UserController extends Controller
     }
 
 //for comment
-    public
-    function addProductComment(Request $request)
+    public function addProductComment(Request $request)
     {
         $text = $request->text;
 
@@ -444,8 +443,7 @@ class UserController extends Controller
         } else return \response()->json('something is wrong', 400);
     }
 
-    public
-    function addStoreComment(Request $request)
+    public function addStoreComment(Request $request)
     {
         $text = $request->text;
         $profile_id = DB::table('profile')->where('user_id', Auth::user()->id)->value('id');
